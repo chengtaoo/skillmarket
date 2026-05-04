@@ -2,7 +2,11 @@ version: '3.8'
 
 services:
   skillmarket:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - MIRROR=registry.cn-shanghai.aliyuncs.com
     container_name: skillmarket
     restart: unless-stopped
     ports:
