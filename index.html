@@ -19,730 +19,173 @@
       --text-secondary: #94a3b8;
       --border: #334155;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
     a { color: var(--primary); text-decoration: none; }
-    a:hover { color: var(--primary-dark); }
 
-    /* 导航栏 */
-    .navbar {
-      background: rgba(30, 41, 59, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
+    .navbar { background: rgba(30,41,59,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0 24px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; }
     .nav-brand i { color: var(--primary); font-size: 24px; }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-link { padding: 8px 16px; border-radius: 8px; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; font-size: 14px; }
+    .nav-link:hover, .nav-link.active { background: var(--primary); color: white; }
+    .nav-actions { display: flex; gap: 12px; align-items: center; }
 
-    .nav-links {
-      display: flex;
-      gap: 8px;
-    }
-
-    .nav-link {
-      padding: 8px 16px;
-      border-radius: 8px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    .nav-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
     .btn-outline:hover { background: var(--bg-light); }
     .btn-sm { padding: 6px 12px; font-size: 13px; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* 主容器 */
-    .main-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 88px 24px 48px;
-    }
-
-    /* 页面 */
+    .main-container { max-width: 1400px; margin: 0 auto; padding: 88px 24px 48px; }
     .page { display: none; }
     .page.active { display: block; }
 
-    /* Hero区域 */
-    .hero {
-      text-align: center;
-      padding: 60px 0;
-    }
+    .hero { text-align: center; padding: 60px 0; }
+    .hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 16px; background: linear-gradient(135deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto 32px; }
 
-    .hero h1 {
-      font-size: 48px;
-      font-weight: 800;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, var(--primary), #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      font-size: 18px;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto 32px;
-    }
-
-    /* 搜索框 */
-    .search-box {
-      max-width: 600px;
-      margin: 0 auto 40px;
-      position: relative;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 16px 24px 16px 56px;
-      border-radius: 16px;
-      border: 2px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text);
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
+    .search-box { max-width: 600px; margin: 0 auto 40px; position: relative; }
+    .search-box input { width: 100%; padding: 16px 24px 16px 56px; border-radius: 16px; border: 2px solid var(--border); background: var(--bg-card); color: var(--text); font-size: 16px; outline: none; transition: border-color 0.2s; }
     .search-box input:focus { border-color: var(--primary); }
+    .search-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 20px; }
 
-    .search-box i {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-secondary);
-      font-size: 20px;
-    }
-
-    /* 统计卡片 */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 16px;
-      max-width: 600px;
-      margin: 0 auto 48px;
-    }
-
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      text-align: center;
-    }
-
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; max-width: 600px; margin: 0 auto 48px; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
     .stat-card i { font-size: 24px; margin-bottom: 8px; }
     .stat-card .value { font-size: 28px; font-weight: 700; }
     .stat-card .label { font-size: 13px; color: var(--text-secondary); }
 
-    /* 分类标签 */
-    .category-tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 32px;
-    }
-
-    .category-tab {
-      padding: 8px 16px;
-      border-radius: 20px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
-    }
-
+    .category-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .category-tab { padding: 8px 16px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); cursor: pointer; font-size: 14px; transition: all 0.2s; }
     .category-tab:hover { border-color: var(--primary); color: var(--primary); }
-    .category-tab.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
+    .category-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-    /* 排序选择 */
-    .sort-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .skill-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+    .skill-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .skill-card-header { display: flex; gap: 16px; margin-bottom: 12px; }
+    .skill-card-icon { width: 48px; height: 48px; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .skill-card-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+    .skill-card-author { font-size: 13px; color: var(--text-secondary); }
+    .skill-card-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .skill-card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); }
+    .skill-card-meta { display: flex; gap: 12px; }
+    .skill-card-meta span { display: flex; align-items: center; gap: 4px; }
 
-    .sort-bar select {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text);
-      font-size: 14px;
-      cursor: pointer;
-    }
+    .sort-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .sort-bar h2 { font-size: 24px; }
+    .sort-bar select { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text); font-size: 14px; cursor: pointer; }
 
-    /* 技能网格 */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 24px;
-    }
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 24px; }
+    .modal-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 18px; }
+    .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end; }
 
-    .skill-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      transition: all 0.3s;
-      cursor: pointer;
-    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 14px; }
+    .form-group textarea { min-height: 120px; resize: vertical; font-family: 'Monaco', 'Menlo', monospace; }
+    .form-group textarea:focus, .form-group input:focus { outline: none; border-color: var(--primary); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-    .skill-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
-    }
+    .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .login-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; }
+    .login-card h1 { text-align: center; margin-bottom: 8px; font-size: 28px; }
+    .login-card .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 32px; }
+    .login-card .error { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
 
-    .skill-card-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .skill-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      flex-shrink: 0;
-    }
-
-    .skill-info h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .skill-info .author {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .skill-description {
-      color: var(--text-secondary);
-      font-size: 14px;
-      margin-bottom: 16px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .skill-meta {
-      display: flex;
-      gap: 16px;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .skill-meta span { display: flex; align-items: center; gap: 4px; }
-    .skill-meta .rating { color: var(--warning); }
-
-    .skill-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 12px;
-    }
-
-    .skill-tag {
-      padding: 4px 8px;
-      background: var(--bg);
-      border-radius: 4px;
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .skill-card-footer {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .skill-card-footer .btn { flex: 1; justify-content: center; }
-
-    /* 模态框 */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 24px;
-    }
-
-    .modal-overlay.active { display: flex; }
-
-    .modal {
-      background: var(--bg-card);
-      border-radius: 16px;
-      max-width: 800px;
-      width: 100%;
-      max-height: 90vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .modal-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 { font-size: 20px; }
-
-    .modal-close {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      border: none;
-      background: var(--bg);
-      color: var(--text);
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .modal-close:hover { background: var(--danger); }
-
-    .modal-body {
-      padding: 24px;
-      overflow-y: auto;
-      flex: 1;
-    }
-
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
-
-    /* 表单 */
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      font-size: 14px;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      font-family: inherit;
-    }
-
-    .form-group textarea {
-      min-height: 120px;
-      resize: vertical;
-      font-family: 'Monaco', 'Menlo', monospace;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    /* 登录页 */
-    .login-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .login-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 40px;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .login-card h1 {
-      text-align: center;
-      margin-bottom: 8px;
-      font-size: 28px;
-    }
-
-    .login-card .subtitle {
-      text-align: center;
-      color: var(--text-secondary);
-      margin-bottom: 32px;
-    }
-
-    .login-card .error {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid var(--danger);
-      color: var(--danger);
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 14px;
-      display: none;
-    }
-
-    /* 管理后台 */
-    .admin-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-    }
-
-    .admin-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
-    }
-
-    .admin-tab {
-      padding: 10px 20px;
-      border-radius: 8px;
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .admin-tab { padding: 10px 20px; border-radius: 8px; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; transition: all 0.2s; }
     .admin-tab:hover { background: var(--bg-light); }
     .admin-tab.active { background: var(--primary); color: white; }
 
-    /* 表格 */
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    th, td {
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      background: var(--bg);
-      font-weight: 600;
-      color: var(--text-secondary);
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg); font-weight: 600; color: var(--text-secondary); font-size: 13px; text-transform: uppercase; }
     tr:hover { background: var(--bg-light); }
 
-    .status-badge {
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 500;
-    }
+    .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .status-approved { background: rgba(16,185,129,0.1); color: var(--success); }
+    .status-pending { background: rgba(245,158,11,0.1); color: var(--warning); }
+    .status-rejected { background: rgba(239,68,68,0.1); color: var(--danger); }
 
-    .status-approved { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-    .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-    .status-rejected { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-
-    /* 空状态 */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-secondary);
-    }
-
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
     .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
-    .empty-state h3 { margin-bottom: 8px; }
 
-    /* Toast 通知 */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 3000;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .toast {
-      padding: 14px 20px;
-      border-radius: 10px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      animation: slideIn 0.3s ease;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+    .toast { padding: 14px 20px; border-radius: 10px; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 14px; animation: slideIn 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
     .toast.success { border-color: var(--success); }
     .toast.error { border-color: var(--danger); }
     .toast.success i { color: var(--success); }
     .toast.error i { color: var(--danger); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    /* 技能详情 */
-    .skill-detail-header {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    .skill-detail-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 16px;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      flex-shrink: 0;
-    }
-
+    .skill-detail-header { display: flex; gap: 24px; margin-bottom: 24px; }
+    .skill-detail-icon { width: 80px; height: 80px; border-radius: 16px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 40px; flex-shrink: 0; }
     .skill-detail-info h2 { font-size: 24px; margin-bottom: 4px; }
     .skill-detail-info .author { color: var(--text-secondary); margin-bottom: 8px; }
+    .skill-detail-meta { display: flex; gap: 20px; font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; }
+    .skill-detail-content { background: var(--bg); border-radius: 12px; padding: 20px; margin-top: 20px; }
+    .skill-detail-content pre { white-space: pre-wrap; word-wrap: break-word; font-family: 'Monaco', 'Menlo', monospace; font-size: 13px; line-height: 1.6; }
 
-    .skill-detail-meta {
-      display: flex;
-      gap: 20px;
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .skill-detail-content {
-      background: var(--bg);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-    }
-
-    .skill-detail-content pre {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-family: 'Monaco', 'Menlo', monospace;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    /* 客户端配置说明 */
-    .client-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      margin-top: 40px;
-    }
-
-    .client-section h2 {
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .client-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .client-card {
-      background: var(--bg);
-      border-radius: 12px;
-      padding: 20px;
-    }
-
-    .client-card h4 {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      font-size: 16px;
-    }
-
+    .client-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-top: 40px; }
+    .client-section h2 { margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .client-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .client-card { background: var(--bg); border-radius: 12px; padding: 20px; }
+    .client-card h4 { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 16px; }
     .client-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
-
-    .code-block {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      font-family: monospace;
-      font-size: 13px;
-      position: relative;
-    }
-
+    .code-block { background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 13px; position: relative; }
     .code-block code { color: var(--primary); }
-    .code-block .copy-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      padding: 4px 8px;
-      font-size: 12px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--text);
-      cursor: pointer;
-    }
-    .code-block .copy-btn:hover { background: var(--primary); }
+    .code-block .copy-btn { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font-size: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); cursor: pointer; }
 
-    /* 加载状态 */
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px;
-      color: var(--text-secondary);
-    }
-
+    .loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: var(--text-secondary); }
     .loading i { margin-right: 12px; animation: spin 1s linear infinite; }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* 响应式 */
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 32px; }
-      .skills-grid { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .skill-detail-header { flex-direction: column; }
-      .nav-links { display: none; }
-    }
+    /* 文件管理样式 */
+    .file-manager { background: var(--bg); border-radius: 12px; padding: 20px; margin-top: 20px; }
+    .file-manager-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .file-manager-header h4 { display: flex; align-items: center; gap: 8px; }
+    .file-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .file-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .file-item:last-child { border-bottom: none; }
+    .file-item i { font-size: 20px; width: 24px; text-align: center; }
+    .file-item .file-name { flex: 1; font-size: 14px; }
+    .file-item .file-size { font-size: 13px; color: var(--text-secondary); }
+    .file-item .file-actions { display: flex; gap: 8px; }
+    .file-icon-python { color: #3572A5; }
+    .file-icon-js { color: #f7df1e; }
+    .file-icon-md { color: #083fa1; }
+    .file-icon-json { color: #292929; }
+    .file-icon-default { color: var(--text-secondary); }
 
-    /* 隐藏文件上传 */
-    .file-input { display: none; }
+    .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; margin-top: 16px; }
+    .upload-zone:hover { border-color: var(--primary); background: rgba(99,102,241,0.05); }
+    .upload-zone i { font-size: 40px; color: var(--text-secondary); margin-bottom: 12px; }
+    .upload-zone p { color: var(--text-secondary); font-size: 14px; }
+    .upload-zone .hint { font-size: 12px; margin-top: 8px; }
+
+    .import-zone { background: rgba(16,185,129,0.05); border-color: var(--success); }
+    .import-zone:hover { border-color: var(--success); }
+
+    @media (max-width: 768px) { .hero h1 { font-size: 32px; } .skills-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } .skill-detail-header { flex-direction: column; } .nav-links { display: none; } }
   </style>
 </head>
 <body>
-  <!-- 导航栏 -->
   <nav class="navbar" id="navbar">
-    <div class="nav-brand">
-      <i class="fas fa-cube"></i>
-      <span>SkillMarket</span>
-    </div>
+    <div class="nav-brand"><i class="fas fa-cube"></i><span>SkillMarket</span></div>
     <div class="nav-links">
       <a class="nav-link active" data-page="home">首页</a>
       <a class="nav-link" data-page="browse">浏览技能</a>
@@ -750,15 +193,9 @@
     </div>
     <div class="nav-actions">
       <span id="userInfo" style="display:none; margin-right: 12px; font-size: 14px; color: var(--text-secondary);"></span>
-      <button class="btn btn-primary" id="adminBtn" style="display:none;" onclick="showPage('admin')">
-        <i class="fas fa-cog"></i> 管理后台
-      </button>
-      <button class="btn btn-outline" id="loginBtn" onclick="showLoginModal()">
-        <i class="fas fa-user"></i> 管理员登录
-      </button>
-      <button class="btn btn-outline" id="logoutBtn" style="display:none;" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> 退出
-      </button>
+      <button class="btn btn-primary" id="adminBtn" style="display:none;" onclick="showPage('admin')"><i class="fas fa-cog"></i> 管理后台</button>
+      <button class="btn btn-outline" id="loginBtn" onclick="showLoginModal()"><i class="fas fa-user"></i> 管理员登录</button>
+      <button class="btn btn-outline" id="logoutBtn" style="display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
     </div>
   </nav>
 
@@ -769,31 +206,23 @@
         <h1>私有化技能市场</h1>
         <p>为团队定制的 AI 技能管理平台，支持一键安装到各类 AI 客户端</p>
       </div>
-
       <div class="search-box">
         <i class="fas fa-search"></i>
         <input type="text" id="searchInput" placeholder="搜索技能名称、描述或标签..." onkeyup="handleSearch(event)">
       </div>
-
       <div class="stats-grid" id="statsGrid">
         <div class="stat-card"><i class="fas fa-cube" style="color: var(--primary)"></i><div class="value" id="statSkills">0</div><div class="label">技能总数</div></div>
         <div class="stat-card"><i class="fas fa-download" style="color: var(--success)"></i><div class="value" id="statDownloads">0</div><div class="label">下载次数</div></div>
         <div class="stat-card"><i class="fas fa-arrow-circle-down" style="color: var(--warning)"></i><div class="value" id="statInstalls">0</div><div class="label">安装次数</div></div>
       </div>
-
       <h2 style="margin-bottom: 20px; font-size: 20px;">热门分类</h2>
-      <div class="category-tabs" id="categoryTabs">
-        <button class="category-tab active" data-category="all">全部</button>
-      </div>
-
+      <div class="category-tabs" id="categoryTabs"><button class="category-tab active" data-category="all">全部</button></div>
       <h2 style="margin-bottom: 20px; font-size: 20px;">精选技能</h2>
-      <div class="skills-grid" id="featuredSkills">
-        <div class="loading"><i class="fas fa-spinner"></i> 加载中...</div>
-      </div>
+      <div class="skills-grid" id="featuredSkills"><div class="loading"><i class="fas fa-spinner"></i> 加载中...</div></div>
     </div>
   </div>
 
-  <!-- 浏览页面 -->
+  <!-- 浏览页 -->
   <div class="page" id="page-browse">
     <div class="main-container">
       <div class="sort-bar">
@@ -805,14 +234,8 @@
           <option value="newest">最新发布</option>
         </select>
       </div>
-
-      <div class="category-tabs" id="browseCategoryTabs">
-        <button class="category-tab active" data-category="all">全部</button>
-      </div>
-
-      <div class="skills-grid" id="skillsGrid">
-        <div class="loading"><i class="fas fa-spinner"></i> 加载中...</div>
-      </div>
+      <div class="category-tabs" id="browseCategoryTabs"><button class="category-tab active" data-category="all">全部</button></div>
+      <div class="skills-grid" id="skillsGrid"><div class="loading"><i class="fas fa-spinner"></i> 加载中...</div></div>
     </div>
   </div>
 
@@ -823,7 +246,6 @@
         <h1>客户端配置指南</h1>
         <p>将你的私有化技能市场配置到各类 AI 客户端</p>
       </div>
-
       <div class="client-section">
         <h2><i class="fas fa-info-circle"></i> 配置说明</h2>
         <div style="background: var(--bg); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
@@ -833,104 +255,26 @@
             <button class="copy-btn" onclick="copyToClipboard(this.parentElement.querySelector('code').textContent)">复制</button>
           </div>
         </div>
-
         <div class="client-list">
-          <!-- OpenClaw -->
           <div class="client-card">
-            <h4><i class="fas fa-paw"></i> OpenClaw</h4>
-            <p>开源的 AI Agent 客户端，支持自定义技能市场</p>
-            <div class="code-block">
-              <p style="margin-bottom: 8px; color: var(--text-secondary); font-size: 12px;">配置文件 ~/.clawhub/config.json:</p>
-              <code id="openclawConfig"></code>
-              <button class="copy-btn" onclick="copyToClipboard(document.getElementById('openclawConfig').textContent)">复制</button>
-            </div>
+            <h4><i class="fas fa-paw"></i> OpenClaw (CLAW)</h4>
+            <p>在设置中添加技能市场地址即可使用</p>
+            <div class="code-block"><code>http://your-server:3000</code></div>
           </div>
-
-          <!-- Cherry Studio -->
           <div class="client-card">
-            <h4><i class="fas fa-gem"></i> Cherry Studio</h4>
-            <p>支持自定义 SKILL 市场的多模型客户端</p>
-            <div class="code-block">
-              <p style="margin-bottom: 8px; color: var(--text-secondary); font-size: 12px;">在设置中添加市场地址:</p>
-              <code>http://your-server:3000</code>
-              <button class="copy-btn" onclick="copyToClipboard('http://your-server:3000')">复制</button>
-            </div>
+            <h4><i class="fas fa-fish"></i> Cherry Studio</h4>
+            <p>在设置 → 技能市场 中添加地址</p>
+            <div class="code-block"><code>http://your-server:3000/.well-known/skillmarket</code></div>
           </div>
-
-          <!-- Cursor -->
           <div class="client-card">
-            <h4><i class="fas fa-gamepad"></i> Cursor</h4>
-            <p>AI 代码编辑器，通过 MCP 协议集成技能</p>
-            <div class="code-block">
-              <p style="margin-bottom: 8px; color: var(--text-secondary); font-size: 12px;">MCP 配置文件 ~/.cursor/mcp.json:</p>
-              <code id="cursorConfig"></code>
-              <button class="copy-btn" onclick="copyToClipboard(document.getElementById('cursorConfig').textContent)">复制</button>
-            </div>
+            <h4><i class="fas fa-cursor"></i> Cursor</h4>
+            <p>在 Agent 配置中使用自定义技能市场</p>
+            <div class="code-block"><code>http://your-server:3000</code></div>
           </div>
-
-          <!-- Claude Desktop -->
           <div class="client-card">
-            <h4><i class="fas fa-clover"></i> Claude Desktop</h4>
-            <p>Anthropic 的 AI 助手桌面应用</p>
-            <div class="code-block">
-              <p style="margin-bottom: 8px; color: var(--text-secondary); font-size: 12px;">MCP 配置文件 ~/.claude/deskp.json:</p>
-              <code id="claudeConfig"></code>
-              <button class="copy-btn" onclick="copyToClipboard(document.getElementById('claudeConfig').textContent)">复制</button>
-            </div>
-          </div>
-
-          <!-- VS Code Copilot -->
-          <div class="client-card">
-            <h4><i class="fab fa-microsoft"></i> VS Code Copilot</h4>
-            <p>通过扩展或自定义命令集成技能</p>
-            <div class="code-block">
-              <p style="margin-bottom: 8px; color: var(--text-secondary); font-size: 12px;">安装命令:</p>
-              <code>clawhub install skill-name</code>
-              <button class="copy-btn" onclick="copyToClipboard('clawhub install skill-name')">复制</button>
-            </div>
-          </div>
-
-          <!-- 自定义客户端 -->
-          <div class="client-card">
-            <h4><i class="fas fa-code"></i> 自定义客户端</h4>
-            <p>使用 REST API 集成到你的应用</p>
-            <div class="code-block">
-              <p style="margin-bottom: 8px; color: var(--text-secondary); font-size: 12px;">API 端点:</p>
-              <code id="apiEndpoint"></code>
-              <button class="copy-btn" onclick="copyToClipboard(document.getElementById('apiEndpoint').textContent)">复制</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="client-section" style="margin-top: 24px;">
-        <h2><i class="fas fa-terminal"></i> 命令行工具 (CLI)</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 20px;">如果你安装了 clawhub CLI，可以使用以下命令：</p>
-        <div style="display: grid; gap: 12px;">
-          <div class="code-block">
-            <code># 添加私有市场</code>
-          </div>
-          <div class="code-block">
-            <code id="cliAddCmd">clawhub add-market http://your-server:3000</code>
-            <button class="copy-btn" onclick="copyToClipboard(document.getElementById('cliAddCmd').textContent)">复制</button>
-          </div>
-          <div class="code-block">
-            <code># 搜索技能</code>
-          </div>
-          <div class="code-block">
-            <code>clawhub search keyword</code>
-          </div>
-          <div class="code-block">
-            <code># 安装技能</code>
-          </div>
-          <div class="code-block">
-            <code>clawhub install skill-slug</code>
-          </div>
-          <div class="code-block">
-            <code># 发布技能</code>
-          </div>
-          <div class="code-block">
-            <code>clawhub publish ./my-skill</code>
+            <h4><i class="fas fa-laptop"></i> LobeChat</h4>
+            <p>在设置中添加技能市场插件</p>
+            <div class="code-block"><code>http://your-server:3000</code></div>
           </div>
         </div>
       </div>
@@ -941,901 +285,628 @@
   <div class="page" id="page-admin">
     <div class="main-container">
       <div class="admin-header">
-        <h1><i class="fas fa-cog"></i> 管理后台</h1>
-        <button class="btn btn-primary" onclick="showUploadModal()">
-          <i class="fas fa-plus"></i> 上传技能
-        </button>
+        <h2>管理后台</h2>
+        <button class="btn btn-success" onclick="showSkillModal()"><i class="fas fa-plus"></i> 新建技能</button>
+      </div>
+
+      <!-- 导入/导出快捷入口 -->
+      <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+        <div class="upload-zone import-zone" onclick="document.getElementById('importFileInput').click()" style="flex: 1; min-width: 250px;">
+          <i class="fas fa-file-import" style="color: var(--success);"></i>
+          <p><strong>导入 ZIP 包</strong></p>
+          <p class="hint">从互联网下载的技能包可直接导入</p>
+          <input type="file" id="importFileInput" accept=".zip" style="display:none;" onchange="handleZipImport(event)">
+        </div>
       </div>
 
       <div class="admin-tabs">
         <button class="admin-tab active" data-tab="skills">技能管理</button>
         <button class="admin-tab" data-tab="users">用户管理</button>
-        <button class="admin-tab" data-tab="stats">数据统计</button>
       </div>
 
-      <!-- 技能管理 -->
-      <div class="admin-content" id="tab-skills">
-        <div class="sort-bar">
-          <select id="adminSkillStatus" onchange="loadAdminSkills()">
-            <option value="all">全部状态</option>
-            <option value="approved">已审核</option>
-            <option value="pending">待审核</option>
-            <option value="rejected">已拒绝</option>
-          </select>
-        </div>
+      <div id="admin-tab-skills">
         <div class="table-container">
-          <table id="adminSkillsTable">
-            <thead>
-              <tr>
-                <th>名称</th>
-                <th>分类</th>
-                <th>作者</th>
-                <th>版本</th>
-                <th>状态</th>
-                <th>下载</th>
-                <th>安装</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
+          <table>
+            <thead><tr><th>图标</th><th>名称</th><th>分类</th><th>版本</th><th>状态</th><th>文件</th><th>操作</th></tr></thead>
+            <tbody id="adminSkillsTable"><tr><td colspan="7" class="loading"><i class="fas fa-spinner"></i> 加载中...</td></tr></tbody>
           </table>
         </div>
       </div>
 
-      <!-- 用户管理 -->
-      <div class="admin-content" id="tab-users" style="display:none;">
+      <div id="admin-tab-users" style="display:none;">
+        <div style="margin-bottom: 16px;">
+          <button class="btn btn-primary" onclick="showUserModal()"><i class="fas fa-plus"></i> 添加用户</button>
+        </div>
         <div class="table-container">
-          <table id="usersTable">
-            <thead>
-              <tr>
-                <th>用户名</th>
-                <th>角色</th>
-                <th>创建时间</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
+          <table>
+            <thead><tr><th>用户名</th><th>角色</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="adminUsersTable"><tr><td colspan="4" class="loading"><i class="fas fa-spinner"></i> 加载中...</td></tr></tbody>
           </table>
         </div>
       </div>
-
-      <!-- 数据统计 -->
-      <div class="admin-content" id="tab-stats" style="display:none;">
-        <div class="stats-grid" style="max-width: none; margin-bottom: 32px;">
-          <div class="stat-card"><i class="fas fa-cube" style="color: var(--primary)"></i><div class="value" id="adminStatSkills">0</div><div class="label">技能总数</div></div>
-          <div class="stat-card"><i class="fas fa-download" style="color: var(--success)"></i><div class="value" id="adminStatDownloads">0</div><div class="label">下载次数</div></div>
-          <div class="stat-card"><i class="fas fa-arrow-circle-down" style="color: var(--warning)"></i><div class="value" id="adminStatInstalls">0</div><div class="label">安装次数</div></div>
-        </div>
-      </div>
     </div>
   </div>
 
-  <!-- 登录模态框 -->
-  <div class="modal-overlay" id="loginModal">
-    <div class="modal" style="max-width: 400px;">
-      <div class="modal-header">
-        <h2>管理员登录</h2>
-        <button class="modal-close" onclick="closeModal('loginModal')"><i class="fas fa-times"></i></button>
-      </div>
+  <!-- 登录 Modal -->
+  <div class="modal" id="loginModal" style="display:none;">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header"><h3>管理员登录</h3><button class="modal-close" onclick="closeModal('loginModal')">&times;</button></div>
       <div class="modal-body">
-        <div class="error" id="loginError"></div>
-        <div class="form-group">
-          <label>用户名</label>
-          <input type="text" id="loginUsername" placeholder="请输入用户名">
-        </div>
-        <div class="form-group">
-          <label>密码</label>
-          <input type="password" id="loginPassword" placeholder="请输入密码" onkeyup="handleLoginKeyup(event)">
-        </div>
+        <div class="error" id="loginError">用户名或密码错误</div>
+        <div class="form-group"><label>用户名</label><input type="text" id="loginUsername" placeholder="admin"></div>
+        <div class="form-group"><label>密码</label><input type="password" id="loginPassword" placeholder="admin123" onkeyup="if(event.key==='Enter')login()"></div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal('loginModal')">取消</button>
-        <button class="btn btn-primary" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> 登录</button>
-      </div>
+      <div class="modal-footer"><button class="btn btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> 登录</button></div>
     </div>
   </div>
 
-  <!-- 技能详情模态框 -->
-  <div class="modal-overlay" id="skillModal">
-    <div class="modal" style="max-width: 900px;">
-      <div class="modal-header">
-        <h2 id="skillModalTitle">技能详情</h2>
-        <button class="modal-close" onclick="closeModal('skillModal')"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="modal-body" id="skillModalBody">
-        <div class="skill-detail-header">
-          <div class="skill-detail-icon" id="skillDetailIcon">📦</div>
-          <div class="skill-detail-info">
-            <h2 id="skillDetailName">技能名称</h2>
-            <div class="author" id="skillDetailAuthor">作者</div>
-            <div class="skill-detail-meta">
-              <span><i class="fas fa-tag"></i> <span id="skillDetailVersion">v1.0.0</span></span>
-              <span><i class="fas fa-star" style="color: var(--warning)"></i> <span id="skillDetailRating">5.0</span></span>
-              <span><i class="fas fa-download"></i> <span id="skillDetailDownloads">0</span></span>
-              <span><i class="fas fa-arrow-circle-down"></i> <span id="skillDetailInstalls">0</span></span>
-            </div>
-          </div>
-        </div>
-        <p id="skillDetailDescription" style="color: var(--text-secondary); margin-bottom: 16px;"></p>
-        <div class="skill-tags" id="skillDetailTags"></div>
-        <div class="skill-detail-content">
-          <h3 style="margin-bottom: 12px;"><i class="fas fa-file-code"></i> SKILL.md 内容</h3>
-          <pre id="skillDetailContent"></pre>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal('skillModal')">关闭</button>
-        <button class="btn btn-success" onclick="downloadSkill()"><i class="fas fa-download"></i> 下载技能包</button>
-        <button class="btn btn-primary" onclick="copyInstallCmd()"><i class="fas fa-terminal"></i> 复制安装命令</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 上传技能模态框 -->
-  <div class="modal-overlay" id="uploadModal">
-    <div class="modal" style="max-width: 800px;">
-      <div class="modal-header">
-        <h2>上传技能</h2>
-        <button class="modal-close" onclick="closeModal('uploadModal')"><i class="fas fa-times"></i></button>
-      </div>
+  <!-- 技能 Modal -->
+  <div class="modal" id="skillModal" style="display:none;">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="modal-header"><h3 id="skillModalTitle">新建技能</h3><button class="modal-close" onclick="closeModal('skillModal')">&times;</button></div>
       <div class="modal-body">
-        <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-          <button class="btn btn-primary" id="tabFormUpload" onclick="switchUploadTab('form')">表单上传</button>
-          <button class="btn btn-outline" id="tabJsonUpload" onclick="switchUploadTab('json')">JSON 上传</button>
+        <input type="hidden" id="skillId">
+        <div class="form-row">
+          <div class="form-group"><label>技能名称 *</label><input type="text" id="skillName" placeholder="例如：企业信息查询"></div>
+          <div class="form-group"><label>Slug *</label><input type="text" id="skillSlug" placeholder="例如：enterprise-search"><div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">唯一标识，用于URL和客户端安装</div></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>作者</label><input type="text" id="skillAuthor" placeholder="团队名称或作者"></div>
+          <div class="form-group"><label>版本</label><input type="text" id="skillVersion" placeholder="1.0.0"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>分类</label><select id="skillCategory"><option value="ai">AI工具</option><option value="image">图像处理</option><option value="video">视频处理</option><option value="dev">开发工具</option><option value="office">办公效率</option><option value="knowledge">知识管理</option><option value="data">数据查询</option><option value="search">内网搜索</option><option value="other">其他</option></select></div>
+          <div class="form-group"><label>图标</label><input type="text" id="skillIcon" placeholder="🤖" style="width:80px; text-align:center; font-size:24px;"></div>
+        </div>
+        <div class="form-group"><label>简介描述</label><textarea id="skillDescription" placeholder="简要描述技能功能..."></textarea></div>
+        <div class="form-group"><label>标签</label><input type="text" id="skillTags" placeholder="标签1, 标签2, 标签3"></div>
+        <div class="form-group"><label>skill.md 内容</label><textarea id="skillContent" placeholder="# 技能名称&#10;&#10;## 功能说明&#10;- 功能1&#10;- 功能2&#10;&#10;## 使用方式&#10;```&#10;使用示例&#10;```" style="min-height:200px;"></textarea></div>
+        <div class="form-group"><label>README.md 内容</label><textarea id="skillReadme" placeholder="详细的 README 内容..."></textarea></div>
+
+        <!-- 文件管理区域 -->
+        <div class="file-manager" id="fileManager" style="display:none;">
+          <div class="file-manager-header">
+            <h4><i class="fas fa-folder"></i> 技能文件</h4>
+            <button class="btn btn-sm btn-primary" onclick="document.getElementById('fileInput').click()"><i class="fas fa-upload"></i> 上传文件</button>
+            <input type="file" id="fileInput" multiple style="display:none;" onchange="handleFileUpload(event)">
+          </div>
+          <div class="file-list" id="fileList"><div style="padding:20px; text-align:center; color:var(--text-secondary);">暂无文件</div></div>
         </div>
 
-        <!-- 表单上传 -->
-        <div id="formUploadPanel">
-          <div class="form-row">
-            <div class="form-group">
-              <label>技能名称 *</label>
-              <input type="text" id="uploadName" placeholder="例如：多搜索引擎聚合">
-            </div>
-            <div class="form-group">
-              <label>Slug (唯一标识) *</label>
-              <input type="text" id="uploadSlug" placeholder="例如：multi-search-engine">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>作者</label>
-              <input type="text" id="uploadAuthor" placeholder="技能作者">
-            </div>
-            <div class="form-group">
-              <label>版本</label>
-              <input type="text" id="uploadVersion" placeholder="1.0.0">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>分类</label>
-              <select id="uploadCategory">
-                <option value="other">其他</option>
-                <option value="ai">AI工具</option>
-                <option value="image">图像处理</option>
-                <option value="video">视频处理</option>
-                <option value="dev">开发工具</option>
-                <option value="office">办公效率</option>
-                <option value="knowledge">知识管理</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>图标 (emoji)</label>
-              <input type="text" id="uploadIcon" placeholder="🔍">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>标签 (逗号分隔)</label>
-            <input type="text" id="uploadTags" placeholder="搜索, 聚合, 多引擎">
-          </div>
-          <div class="form-group">
-            <label>简介</label>
-            <input type="text" id="uploadDescription" placeholder="简要描述技能功能">
-          </div>
-          <div class="form-group">
-            <label>SKILL.md 内容 *</label>
-            <textarea id="uploadContent" placeholder="# 技能名称
-
-## 功能特性
-- 功能1
-- 功能2
-
-## 使用方法
-..."></textarea>
-          </div>
-          <div class="form-group">
-            <label>README (可选)</label>
-            <textarea id="uploadReadme" placeholder="详细说明文档..."></textarea>
-          </div>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p><strong>上传代码文件</strong></p>
+          <p>支持 Python (.py)、JavaScript (.js)、JSON (.json) 等文件</p>
+          <p class="hint">单个文件最大 50MB</p>
+          <input type="file" id="fileInput" multiple style="display:none;" onchange="handleFileUpload(event)">
         </div>
 
-        <!-- JSON 上传 -->
-        <div id="jsonUploadPanel" style="display:none;">
-          <div class="form-group">
-            <label>粘贴 JSON 内容</label>
-            <textarea id="uploadJson" style="min-height: 300px;" placeholder='{
-  "name": "技能名称",
-  "slug": "skill-slug",
-  "content": "# SKILL.md 内容..."
-}'></textarea>
+        <div class="form-row" style="margin-top: 20px;">
+          <div class="form-group"><label>状态</label><select id="skillStatus"><option value="approved">已审核</option><option value="pending">待审核</option><option value="rejected">已拒绝</option></select></div>
+          <div class="form-group" style="display:flex; align-items:center; padding-top: 24px;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" id="skillFeatured" style="width:18px; height:18px;"> 设为精选</label>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal('uploadModal')">取消</button>
-        <button class="btn btn-primary" onclick="doUpload()"><i class="fas fa-upload"></i> 上传</button>
+        <button class="btn btn-success" id="exportSkillBtn" style="display:none;" onclick="exportCurrentSkill()"><i class="fas fa-download"></i> 导出ZIP</button>
+        <button class="btn btn-outline" onclick="closeModal('skillModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveSkill()"><i class="fas fa-save"></i> 保存</button>
       </div>
     </div>
   </div>
 
-  <!-- 用户创建模态框 -->
-  <div class="modal-overlay" id="createUserModal">
-    <div class="modal" style="max-width: 400px;">
-      <div class="modal-header">
-        <h2>创建用户</h2>
-        <button class="modal-close" onclick="closeModal('createUserModal')"><i class="fas fa-times"></i></button>
-      </div>
+  <!-- 用户 Modal -->
+  <div class="modal" id="userModal" style="display:none;">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header"><h3>添加用户</h3><button class="modal-close" onclick="closeModal('userModal')">&times;</button></div>
       <div class="modal-body">
-        <div class="form-group">
-          <label>用户名</label>
-          <input type="text" id="newUsername" placeholder="请输入用户名">
-        </div>
-        <div class="form-group">
-          <label>密码</label>
-          <input type="password" id="newPassword" placeholder="请输入密码">
-        </div>
-        <div class="form-group">
-          <label>角色</label>
-          <select id="newUserRole">
-            <option value="user">普通用户</option>
-            <option value="admin">管理员</option>
-          </select>
-        </div>
+        <div class="form-group"><label>用户名</label><input type="text" id="newUsername" placeholder="输入用户名"></div>
+        <div class="form-group"><label>密码</label><input type="password" id="newPassword" placeholder="输入密码"></div>
+        <div class="form-group"><label>角色</label><select id="newUserRole"><option value="user">普通用户</option><option value="admin">管理员</option></select></div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal('createUserModal')">取消</button>
-        <button class="btn btn-primary" onclick="doCreateUser()"><i class="fas fa-user-plus"></i> 创建</button>
-      </div>
+      <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('userModal')">取消</button><button class="btn btn-primary" onclick="createUser()"><i class="fas fa-plus"></i> 创建</button></div>
     </div>
   </div>
 
-  <!-- Toast 容器 -->
+  <!-- 详情 Modal -->
+  <div class="modal" id="detailModal" style="display:none;">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header"><h3 id="detailModalTitle">技能详情</h3><button class="modal-close" onclick="closeModal('detailModal')">&times;</button></div>
+      <div class="modal-body" id="detailModalBody"></div>
+      <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('detailModal')">关闭</button><button class="btn btn-primary" id="detailInstallBtn"><i class="fas fa-download"></i> 下载安装包</button></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
   <div class="toast-container" id="toastContainer"></div>
 
   <script>
-    // ============ 全局状态 ============
-    let API_BASE = '';  // 空字符串表示同源
+    const API_BASE = '';
+    let token = localStorage.getItem('token');
     let currentUser = null;
-    let currentToken = localStorage.getItem('skillmarket_token');
     let categories = [];
-    let currentSkill = null;
-    let uploadTab = 'form';
+    let currentSkillId = null;
 
-    // ============ 初始化 ============
-    document.addEventListener('DOMContentLoaded', async () => {
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      loadCategories();
+      loadStats();
+      loadFeaturedSkills();
       updateMarketUrl();
-      await loadCategories();
-      await loadStats();
-      await loadSkills('featured');
-      
-      if (currentToken) {
-        await checkAuth();
-      }
+      document.querySelectorAll('.nav-link, .admin-tab').forEach(el => el.addEventListener('click', handleNavClick));
     });
 
-    // ============ API 请求 ============
-    async function api(endpoint, options = {}) {
-      const headers = { 'Content-Type': 'application/json' };
-      if (currentToken) {
-        headers['Authorization'] = `Bearer ${currentToken}`;
-      }
-      
-      const res = await fetch(`${API_BASE}${endpoint}`, {
-        ...options,
-        headers: { ...headers, ...options.headers }
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || '请求失败');
-      }
-      
-      return data;
+    function handleNavClick(e) {
+      const page = e.target.dataset.page || e.target.dataset.tab;
+      if (e.target.dataset.page) showPage(page);
+      else showAdminTab(page);
     }
 
-    // ============ 认证 ============
-    async function checkAuth() {
+    function showPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(`page-${page}`).classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      document.querySelector(`.nav-link[data-page="${page}"]`)?.classList.add('active');
+      if (page === 'admin' && token) loadAdminData();
+    }
+
+    function showAdminTab(tab) {
+      document.getElementById('admin-tab-skills').style.display = tab === 'skills' ? 'block' : 'none';
+      document.getElementById('admin-tab-users').style.display = tab === 'users' ? 'block' : 'none';
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.admin-tab[data-tab="${tab}"]`)?.classList.add('active');
+    }
+
+    function updateMarketUrl() {
+      document.getElementById('marketUrl').textContent = window.location.origin;
+    }
+
+    function checkAuth() {
+      if (token) {
+        fetch(`${API_BASE}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+          .then(r => r.ok ? r.json() : Promise.reject())
+          .then(data => {
+            currentUser = data.user;
+            document.getElementById('userInfo').textContent = data.user.username;
+            document.getElementById('userInfo').style.display = 'inline';
+            document.getElementById('adminBtn').style.display = 'inline-flex';
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'inline-flex';
+          }).catch(() => { token = null; localStorage.removeItem('token'); });
+      }
+    }
+
+    async function login() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
       try {
-        const data = await api('/api/auth/me');
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        token = data.token;
+        localStorage.setItem('token', token);
         currentUser = data.user;
-        updateUserUI();
+        closeModal('loginModal');
+        showToast('登录成功', 'success');
+        checkAuth();
       } catch (e) {
-        currentToken = null;
-        localStorage.removeItem('skillmarket_token');
-      }
-    }
-
-    function updateUserUI() {
-      const loginBtn = document.getElementById('loginBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const adminBtn = document.getElementById('adminBtn');
-      const userInfo = document.getElementById('userInfo');
-      
-      if (currentUser) {
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'block';
-        userInfo.style.display = 'block';
-        userInfo.textContent = `欢迎，${currentUser.username}`;
-        
-        if (currentUser.role === 'admin') {
-          adminBtn.style.display = 'block';
-        }
-      } else {
-        loginBtn.style.display = 'block';
-        logoutBtn.style.display = 'none';
-        adminBtn.style.display = 'none';
-        userInfo.style.display = 'none';
+        document.getElementById('loginError').textContent = e.message;
+        document.getElementById('loginError').style.display = 'block';
       }
     }
 
     function logout() {
-      currentToken = null;
+      token = null;
+      localStorage.removeItem('token');
       currentUser = null;
-      localStorage.removeItem('skillmarket_token');
-      updateUserUI();
+      document.getElementById('userInfo').style.display = 'none';
+      document.getElementById('adminBtn').style.display = 'none';
+      document.getElementById('loginBtn').style.display = 'inline-flex';
+      document.getElementById('logoutBtn').style.display = 'none';
       showPage('home');
-      toast('已退出登录', 'success');
+      showToast('已退出登录', 'success');
     }
 
-    // ============ 登录 ============
-    function showLoginModal() {
-      document.getElementById('loginModal').classList.add('active');
-      document.getElementById('loginUsername').focus();
-    }
+    function showLoginModal() { document.getElementById('loginError').style.display = 'none'; openModal('loginModal'); }
 
-    function handleLoginKeyup(e) {
-      if (e.key === 'Enter') doLogin();
-    }
-
-    async function doLogin() {
-      const username = document.getElementById('loginUsername').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      const errorEl = document.getElementById('loginError');
-      
-      if (!username || !password) {
-        errorEl.textContent = '请输入用户名和密码';
-        errorEl.style.display = 'block';
-        return;
-      }
-      
-      try {
-        const data = await api('/api/auth/login', {
-          method: 'POST',
-          body: JSON.stringify({ username, password })
-        });
-        
-        currentToken = data.token;
-        currentUser = data.user;
-        localStorage.setItem('skillmarket_token', currentToken);
-        
-        closeModal('loginModal');
-        updateUserUI();
-        toast('登录成功', 'success');
-        
-        document.getElementById('loginUsername').value = '';
-        document.getElementById('loginPassword').value = '';
-        errorEl.style.display = 'none';
-        
-        if (currentUser.role === 'admin') {
-          showPage('admin');
-        }
-      } catch (e) {
-        errorEl.textContent = e.message;
-        errorEl.style.display = 'block';
-      }
-    }
-
-    // ============ 页面导航 ============
-    function showPage(pageName) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      
-      document.getElementById(`page-${pageName}`).classList.add('active');
-      const link = document.querySelector(`.nav-link[data-page="${pageName}"]`);
-      if (link) link.classList.add('active');
-      
-      if (pageName === 'browse') loadSkills();
-      if (pageName === 'admin' && currentUser?.role === 'admin') {
-        loadAdminSkills();
-        loadUsers();
-        loadAdminStats();
-      }
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => showPage(link.dataset.page));
-    });
-
-    // ============ 加载数据 ============
     async function loadCategories() {
       try {
-        const data = await api('/api/categories');
-        categories = data.categories;
-        renderCategories();
-      } catch (e) {
-        console.error('加载分类失败:', e);
-      }
-    }
-
-    function renderCategories() {
-      const tabs = ['categoryTabs', 'browseCategoryTabs'];
-      tabs.forEach(id => {
-        const el = document.getElementById(id);
-        el.innerHTML = '<button class="category-tab active" data-category="all">全部</button>';
-        categories.forEach(cat => {
-          el.innerHTML += `<button class="category-tab" data-category="${cat.id}">${cat.icon} ${cat.name}</button>`;
+        const res = await fetch(`${API_BASE}/api/categories`);
+        const data = await res.json();
+        categories = data.categories || [];
+        const html = categories.map(c => `<button class="category-tab" data-category="${c.id}">${c.icon} ${c.name}</button>`).join('');
+        document.getElementById('categoryTabs').innerHTML = `<button class="category-tab active" data-category="all">全部</button>` + html;
+        document.getElementById('browseCategoryTabs').innerHTML = `<button class="category-tab active" data-category="all">全部</button>` + html;
+        document.querySelectorAll('.category-tabs').forEach(tabs => {
+          tabs.addEventListener('click', e => {
+            if (e.target.classList.contains('category-tab')) {
+              const category = e.target.dataset.category;
+              const page = tabs.id === 'categoryTabs' ? 'home' : 'browse';
+              if (page === 'home') loadFeaturedSkills(category);
+              else { window.browseCategory = category; loadSkills(); }
+              tabs.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+              e.target.classList.add('active');
+            }
+          });
         });
-      });
-      
-      document.querySelectorAll('.category-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll(`.category-tab[data-category]`).forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          const category = tab.dataset.category;
-          const parent = tab.closest('#categoryTabs, #browseCategoryTabs');
-          
-          if (parent.id === 'categoryTabs') {
-            loadSkills('featured', category);
-          } else {
-            loadSkills('all', category);
-          }
-        });
-      });
+      } catch (e) { console.error('加载分类失败', e); }
     }
 
     async function loadStats() {
       try {
-        const data = await api('/api/stats');
-        document.getElementById('statSkills').textContent = data.skills;
-        document.getElementById('statDownloads').textContent = data.downloads;
-        document.getElementById('statInstalls').textContent = data.installs;
-      } catch (e) {
-        console.error('加载统计失败:', e);
-      }
+        const res = await fetch(`${API_BASE}/api/stats`);
+        const data = await res.json();
+        document.getElementById('statSkills').textContent = data.skills || 0;
+        document.getElementById('statDownloads').textContent = data.downloads || 0;
+        document.getElementById('statInstalls').textContent = data.installs || 0;
+      } catch (e) { console.error('加载统计失败', e); }
     }
 
-    async function loadSkills(type = 'all', category = 'all') {
-      const gridId = type === 'featured' ? 'featuredSkills' : 'skillsGrid';
-      const el = document.getElementById(gridId);
-      el.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> 加载中...</div>';
-      
+    async function loadFeaturedSkills(category = 'all') {
+      const container = document.getElementById('featuredSkills');
+      container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> 加载中...</div>';
       try {
-        const params = new URLSearchParams();
-        if (type === 'featured') params.set('featured', 'true');
-        if (category !== 'all') params.set('category', category);
-        params.set('sort', document.getElementById('sortSelect')?.value || 'downloads');
-        
-        const data = await api(`/api/skills?${params}`);
-        
-        if (data.skills.length === 0) {
-          el.innerHTML = `
-            <div class="empty-state">
-              <i class="fas fa-box-open"></i>
-              <h3>暂无技能</h3>
-              <p>管理员上传后即可显示</p>
-            </div>
-          `;
+        const url = category === 'all' ? `${API_BASE}/api/skills?featured=true` : `${API_BASE}/api/skills?category=${category}&featured=true`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!data.skills || data.skills.length === 0) {
+          container.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>暂无技能</h3><p>管理员上传后即可显示</p></div>';
           return;
         }
-        
-        el.innerHTML = data.skills.map(skill => renderSkillCard(skill)).join('');
-      } catch (e) {
-        el.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>加载失败</h3><p>${e.message}</p></div>`;
-      }
+        container.innerHTML = data.skills.map(s => renderSkillCard(s)).join('');
+      } catch (e) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>加载失败</h3></div>'; }
     }
 
-    function renderSkillCard(skill) {
-      const tags = skill.tags ? skill.tags.split(',').slice(0, 3) : [];
-      return `
-        <div class="skill-card" onclick="showSkillDetail('${skill.id}')">
-          <div class="skill-card-header">
-            <div class="skill-icon">${skill.icon || '📦'}</div>
-            <div class="skill-info">
-              <h3>${skill.name}</h3>
-              <div class="author">${skill.author || '未知作者'} · v${skill.version || '1.0.0'}</div>
-            </div>
-          </div>
-          <p class="skill-description">${skill.description || '暂无描述'}</p>
-          <div class="skill-meta">
-            <span><i class="fas fa-star rating"></i> ${(skill.rating || 5).toFixed(1)}</span>
-            <span><i class="fas fa-download"></i> ${skill.downloads || 0}</span>
-            <span><i class="fas fa-arrow-circle-down"></i> ${skill.installs || 0}</span>
-          </div>
-          ${tags.length ? `<div class="skill-tags">${tags.map(t => `<span class="skill-tag">${t.trim()}</span>`).join('')}</div>` : ''}
-          <div class="skill-card-footer">
-            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); downloadSkillById('${skill.id}')">
-              <i class="fas fa-download"></i> 下载
-            </button>
-            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); copyInstallCmdById('${skill.id}')">
-              <i class="fas fa-terminal"></i> 安装
-            </button>
+    async function loadSkills() {
+      const container = document.getElementById('skillsGrid');
+      container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> 加载中...</div>';
+      try {
+        const sort = document.getElementById('sortSelect').?.value || 'downloads';
+        const category = window.browseCategory || 'all';
+        const res = await fetch(`${API_BASE}/api/skills?sort=${sort}&category=${category}&status=all`);
+        const data = await res.json();
+        if (!data.skills || data.skills.length === 0) {
+          container.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>暂无技能</h3></div>';
+          return;
+        }
+        container.innerHTML = data.skills.map(s => renderSkillCard(s)).join('');
+      } catch (e) { container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>加载失败</h3></div>'; }
+    }
+
+    function renderSkillCard(s) {
+      const category = categories.find(c => c.id === s.category) || { icon: '📦', name: s.category };
+      return `<div class="skill-card" onclick="showSkillDetail('${s.id}')">
+        <div class="skill-card-header">
+          <div class="skill-card-icon">${s.icon || '📦'}</div>
+          <div>
+            <div class="skill-card-title">${s.name}</div>
+            <div class="skill-card-author">${category.icon} ${category.name} · ${s.author || '未知作者'}</div>
           </div>
         </div>
-      `;
+        <div class="skill-card-desc">${s.description || '暂无描述'}</div>
+        <div class="skill-card-footer">
+          <div class="skill-card-meta">
+            <span><i class="fas fa-download"></i> ${s.downloads || 0}</span>
+            <span><i class="fas fa-star" style="color:#f59e0b"></i> ${s.rating || 5.0}</span>
+          </div>
+          <span style="color:var(--text-secondary); font-size:12px;">v${s.version || '1.0.0'}</span>
+        </div>
+      </div>`;
     }
 
-    // ============ 搜索 ============
-    function handleSearch(e) {
-      if (e.key === 'Enter') {
-        const query = e.target.value.trim();
-        if (query) {
-          showPage('browse');
-          searchSkills(query);
-        }
-      }
-    }
-
-    async function searchSkills(query) {
-      const el = document.getElementById('skillsGrid');
-      el.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> 搜索中...</div>';
-      
+    async function showSkillDetail(id) {
       try {
-        const data = await api(`/api/skills?search=${encodeURIComponent(query)}`);
-        
-        if (data.skills.length === 0) {
-          el.innerHTML = `
-            <div class="empty-state">
-              <i class="fas fa-search"></i>
-              <h3>未找到相关技能</h3>
-              <p>尝试其他关键词</p>
+        const res = await fetch(`${API_BASE}/api/skills/${id}`);
+        const data = await res.json();
+        const s = data.skill;
+        const category = categories.find(c => c.id === s.category) || { icon: '📦', name: s.category };
+        document.getElementById('detailModalTitle').textContent = `${s.icon || '📦'} ${s.name}`;
+        document.getElementById('detailModalBody').innerHTML = `
+          <div class="skill-detail-header">
+            <div class="skill-detail-icon">${s.icon || '📦'}</div>
+            <div class="skill-detail-info">
+              <h2>${s.name}</h2>
+              <div class="author">${s.author || '未知作者'} · ${category.icon} ${category.name}</div>
+              <div class="skill-detail-meta">
+                <span><i class="fas fa-star" style="color:#f59e0b"></i> ${s.rating || 5.0}</span>
+                <span><i class="fas fa-download"></i> ${s.downloads || 0} 次下载</span>
+                <span><i class="fas fa-arrow-circle-down"></i> ${s.installs || 0} 次安装</span>
+                <span>v${s.version || '1.0.0'}</span>
+              </div>
             </div>
-          `;
-          return;
-        }
-        
-        el.innerHTML = data.skills.map(skill => renderSkillCard(skill)).join('');
-      } catch (e) {
-        el.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>搜索失败</h3><p>${e.message}</p></div>`;
-      }
+          </div>
+          <p style="color:var(--text-secondary); margin-bottom:20px;">${s.description || '暂无描述'}</p>
+          ${s.tags ? `<p style="margin-bottom:20px;"><strong>标签：</strong>${s.tags}</p>` : ''}
+          ${s.content ? `<div class="skill-detail-content"><h4 style="margin-bottom:12px;"><i class="fas fa-code"></i> skill.md</h4><pre>${escapeHtml(s.content)}</pre></div>` : ''}
+          ${s.readme ? `<div class="skill-detail-content"><h4 style="margin-bottom:12px;"><i class="fas fa-file-alt"></i> README.md</h4><pre>${escapeHtml(s.readme)}</pre></div>` : ''}
+        `;
+        document.getElementById('detailInstallBtn').onclick = () => downloadSkill(s.id);
+        openModal('detailModal');
+      } catch (e) { showToast('加载详情失败', 'error'); }
     }
 
-    // ============ 技能详情 ============
-    async function showSkillDetail(skillId) {
-      try {
-        const data = await api(`/api/skills/${skillId}`);
-        currentSkill = data.skill;
-        
-        document.getElementById('skillModalTitle').textContent = currentSkill.name;
-        document.getElementById('skillDetailIcon').textContent = currentSkill.icon || '📦';
-        document.getElementById('skillDetailName').textContent = currentSkill.name;
-        document.getElementById('skillDetailAuthor').textContent = `作者: ${currentSkill.author || '未知'}`;
-        document.getElementById('skillDetailVersion').textContent = `v${currentSkill.version || '1.0.0'}`;
-        document.getElementById('skillDetailRating').textContent = (currentSkill.rating || 5).toFixed(1);
-        document.getElementById('skillDetailDownloads').textContent = currentSkill.downloads || 0;
-        document.getElementById('skillDetailInstalls').textContent = currentSkill.installs || 0;
-        document.getElementById('skillDetailDescription').textContent = currentSkill.description || '';
-        document.getElementById('skillDetailContent').textContent = currentSkill.content || '# 暂无内容';
-        
-        const tagsEl = document.getElementById('skillDetailTags');
-        const tags = currentSkill.tags ? currentSkill.tags.split(',') : [];
-        tagsEl.innerHTML = tags.map(t => `<span class="skill-tag">${t.trim()}</span>`).join('');
-        
-        document.getElementById('skillModal').classList.add('active');
-      } catch (e) {
-        toast('加载失败: ' + e.message, 'error');
-      }
-    }
+    function downloadSkill(id) { window.open(`${API_BASE}/api/skills/${id}/download`, '_blank'); }
 
-    // ============ 下载与安装 ============
-    async function downloadSkill() {
-      if (!currentSkill) return;
-      await downloadSkillById(currentSkill.id);
+    async function loadAdminData() {
+      if (!token) return;
+      loadAdminSkills();
+      loadAdminUsers();
     }
-
-    async function downloadSkillById(skillId) {
-      try {
-        const data = await api(`/api/skills/${skillId}`);
-        const skill = data.skill;
-        
-        const blob = new Blob([JSON.stringify({
-          name: skill.name,
-          slug: skill.slug,
-          version: skill.version,
-          author: skill.author,
-          description: skill.description,
-          category: skill.category,
-          tags: skill.tags ? skill.tags.split(',') : [],
-          icon: skill.icon,
-          content: skill.content,
-          readme: skill.readme
-        }, null, 2)], { type: 'application/json' });
-        
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${skill.slug}.skill.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        toast('下载成功', 'success');
-      } catch (e) {
-        toast('下载失败: ' + e.message, 'error');
-      }
-    }
-
-    function copyInstallCmd() {
-      if (!currentSkill) return;
-      copyInstallCmdById(currentSkill.id);
-    }
-
-    function copyInstallCmdById(skillId) {
-      const serverUrl = window.location.origin + API_BASE;
-      const cmd = `clawhub install ${skillId} --market ${serverUrl}`;
-      copyToClipboard(cmd);
-      toast('安装命令已复制', 'success');
-      
-      // 记录安装
-      api('/api/install', {
-        method: 'POST',
-        body: JSON.stringify({ skillId: skillId, clientType: 'web', clientVersion: '1.0.0' })
-      }).catch(() => {});
-    }
-
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-      });
-    }
-
-    // ============ 管理后台 ============
-    document.querySelectorAll('.admin-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        
-        document.querySelectorAll('.admin-content').forEach(c => c.style.display = 'none');
-        document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
-        
-        if (tab.dataset.tab === 'stats') loadAdminStats();
-      });
-    });
 
     async function loadAdminSkills() {
-      const status = document.getElementById('adminSkillStatus').value;
+      const tbody = document.getElementById('adminSkillsTable');
+      tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner"></i> 加载中...</td></tr>';
       try {
-        const data = await api(`/api/skills?status=${status === 'all' ? '' : status}&sort=newest`);
-        
-        const tbody = document.querySelector('#adminSkillsTable tbody');
-        tbody.innerHTML = data.skills.map(s => `
-          <tr>
-            <td><strong>${s.icon || '📦'}</strong> ${s.name}</td>
-            <td>${getCategoryName(s.category)}</td>
-            <td>${s.author || '-'}</td>
+        const res = await fetch(`${API_BASE}/api/skills?status=all`);
+        const data = await res.json();
+        if (!data.skills || data.skills.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-box-open"></i> 暂无技能</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.skills.map(s => {
+          const category = categories.find(c => c.id === s.category) || { name: s.category };
+          const statusClass = `status-${s.status}`;
+          return `<tr>
+            <td style="font-size:24px;">${s.icon || '📦'}</td>
+            <td><strong>${s.name}</strong><br><span style="font-size:12px; color:var(--text-secondary);">${s.slug}</span></td>
+            <td>${category.icon} ${category.name}</td>
             <td>v${s.version || '1.0.0'}</td>
-            <td><span class="status-badge status-${s.status}">${getStatusText(s.status)}</span></td>
-            <td>${s.downloads || 0}</td>
-            <td>${s.installs || 0}</td>
+            <td><span class="status-badge ${statusClass}">${s.status === 'approved' ? '已审核' : s.status === 'pending' ? '待审核' : '已拒绝'}</span></td>
+            <td>${s.fileCount || 0} 个文件</td>
             <td>
-              <button class="btn btn-sm btn-outline" onclick="showSkillDetail('${s.id}')"><i class="fas fa-eye"></i></button>
+              <button class="btn btn-sm btn-outline" onclick="editSkill('${s.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-sm btn-outline" onclick="exportSkill('${s.id}')"><i class="fas fa-download"></i></button>
               <button class="btn btn-sm btn-danger" onclick="deleteSkill('${s.id}')"><i class="fas fa-trash"></i></button>
             </td>
-          </tr>
-        `).join('');
-      } catch (e) {
-        toast('加载失败: ' + e.message, 'error');
-      }
+          </tr>`;
+        }).join('');
+      } catch (e) { tbody.innerHTML = '<tr><td colspan="7" class="error">加载失败</td></tr>'; }
     }
 
-    async function loadUsers() {
+    async function loadAdminUsers() {
+      const tbody = document.getElementById('adminUsersTable');
+      tbody.innerHTML = '<tr><td colspan="4" class="loading"><i class="fas fa-spinner"></i> 加载中...</td></tr>';
       try {
-        const data = await api('/api/users');
-        
-        const tbody = document.querySelector('#usersTable tbody');
-        tbody.innerHTML = data.users.map(u => `
-          <tr>
-            <td>${u.username}</td>
-            <td><span class="status-badge ${u.role === 'admin' ? 'status-approved' : 'status-pending'}">${u.role === 'admin' ? '管理员' : '用户'}</span></td>
-            <td>${new Date(u.created_at).toLocaleDateString()}</td>
-            <td>
-              ${u.username !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button>` : '-'}
-            </td>
-          </tr>
-        `).join('');
-        
-        tbody.innerHTML += `
-          <tr>
-            <td colspan="4">
-              <button class="btn btn-primary btn-sm" onclick="openCreateUserModal()">
-                <i class="fas fa-user-plus"></i> 创建用户
-              </button>
-            </td>
-          </tr>
-        `;
-      } catch (e) {
-        // 忽略错误
-      }
+        const res = await fetch(`${API_BASE}/api/users`, { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        tbody.innerHTML = data.users.map(u => `<tr>
+          <td>${u.username}</td>
+          <td><span class="status-badge ${u.role === 'admin' ? 'status-approved' : 'status-pending'}">${u.role === 'admin' ? '管理员' : '普通用户'}</span></td>
+          <td>${new Date(u.created_at).toLocaleDateString()}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button></td>
+        </tr>`).join('');
+      } catch (e) { tbody.innerHTML = '<tr><td colspan="4" class="error">加载失败</td></tr>'; }
     }
 
-    async function loadAdminStats() {
+    function showSkillModal(skill = null) {
+      document.getElementById('skillModalTitle').textContent = skill ? '编辑技能' : '新建技能';
+      document.getElementById('skillId').value = skill?.id || '';
+      document.getElementById('skillName').value = skill?.name || '';
+      document.getElementById('skillSlug').value = skill?.slug || '';
+      document.getElementById('skillAuthor').value = skill?.author || '';
+      document.getElementById('skillVersion').value = skill?.version || '1.0.0';
+      document.getElementById('skillCategory').value = skill?.category || 'ai';
+      document.getElementById('skillIcon').value = skill?.icon || '📦';
+      document.getElementById('skillDescription').value = skill?.description || '';
+      document.getElementById('skillTags').value = skill?.tags || '';
+      document.getElementById('skillContent').value = skill?.content || '';
+      document.getElementById('skillReadme').value = skill?.readme || '';
+      document.getElementById('skillStatus').value = skill?.status || 'approved';
+      document.getElementById('skillFeatured').checked = skill?.featured === 1;
+      document.getElementById('exportSkillBtn').style.display = skill ? 'inline-flex' : 'none';
+      document.getElementById('fileManager').style.display = skill ? 'block' : 'none';
+      if (skill) { currentSkillId = skill.id; loadSkillFiles(skill.id); }
+      else currentSkillId = null;
+      openModal('skillModal');
+    }
+
+    async function editSkill(id) {
       try {
-        const data = await api('/api/stats');
-        document.getElementById('adminStatSkills').textContent = data.skills;
-        document.getElementById('adminStatDownloads').textContent = data.downloads;
-        document.getElementById('adminStatInstalls').textContent = data.installs;
-      } catch (e) {}
+        const res = await fetch(`${API_BASE}/api/skills/${id}`);
+        const data = await res.json();
+        showSkillModal(data.skill);
+      } catch (e) { showToast('加载失败', 'error'); }
     }
 
-    function getCategoryName(catId) {
-      const cat = categories.find(c => c.id === catId);
-      return cat ? `${cat.icon} ${cat.name}` : catId || '-';
+    async function loadSkillFiles(skillId) {
+      const fileList = document.getElementById('fileList');
+      try {
+        const res = await fetch(`${API_BASE}/api/skills/${skillId}`);
+        const data = await res.json();
+        const files = data.skill.files || [];
+        if (files.length === 0) {
+          fileList.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-secondary);">暂无文件</div>';
+          return;
+        }
+        fileList.innerHTML = files.map(f => {
+          const iconClass = getFileIconClass(f.name);
+          return `<div class="file-item">
+            <i class="fas fa-file ${iconClass}"></i>
+            <span class="file-name">${f.name}</span>
+            <span class="file-size">${formatFileSize(f.size)}</span>
+            <div class="file-actions">
+              <button class="btn btn-sm btn-outline" onclick="downloadFile('${skillId}', '${f.id}')"><i class="fas fa-download"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="deleteFile('${skillId}', '${f.id}')"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>`;
+        }).join('');
+      } catch (e) { fileList.innerHTML = '<div style="padding:20px; color:var(--danger);">加载失败</div>'; }
     }
 
-    function getStatusText(status) {
-      const map = { approved: '已审核', pending: '待审核', rejected: '已拒绝' };
-      return map[status] || status;
+    function getFileIconClass(name) {
+      if (name.endsWith('.py')) return 'file-icon-python';
+      if (name.endsWith('.js')) return 'file-icon-js';
+      if (name.endsWith('.md')) return 'file-icon-md';
+      if (name.endsWith('.json')) return 'file-icon-json';
+      return 'file-icon-default';
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+    }
+
+    async function handleFileUpload(event) {
+      const files = event.target.files;
+      if (!files.length || !currentSkillId) { showToast('请先保存技能', 'error'); return; }
+      const formData = new FormData();
+      for (const file of files) formData.append('files', file);
+      try {
+        const res = await fetch(`${API_BASE}/api/skills/${currentSkillId}/files/multiple`, {
+          method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData
+        });
+        if (!res.ok) throw new Error('上传失败');
+        showToast(`成功上传 ${files.length} 个文件`, 'success');
+        loadSkillFiles(currentSkillId);
+      } catch (e) { showToast(e.message, 'error'); }
+      event.target.value = '';
+    }
+
+    function downloadFile(skillId, fileId) { window.open(`${API_BASE}/api/skills/${skillId}/files/${fileId}`, '_blank'); }
+
+    async function deleteFile(skillId, fileId) {
+      if (!confirm('确定要删除这个文件吗？')) return;
+      try {
+        const res = await fetch(`${API_BASE}/api/skills/${skillId}/files/${fileId}`, {
+          method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('删除失败');
+        showToast('文件已删除', 'success');
+        loadSkillFiles(skillId);
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function saveSkill() {
+      const id = document.getElementById('skillId').value;
+      const data = {
+        name: document.getElementById('skillName').value,
+        slug: document.getElementById('skillSlug').value,
+        author: document.getElementById('skillAuthor').value,
+        version: document.getElementById('skillVersion').value,
+        category: document.getElementById('skillCategory').value,
+        icon: document.getElementById('skillIcon').value,
+        description: document.getElementById('skillDescription').value,
+        tags: document.getElementById('skillTags').value,
+        content: document.getElementById('skillContent').value,
+        readme: document.getElementById('skillReadme').value,
+        status: document.getElementById('skillStatus').value,
+        featured: document.getElementById('skillFeatured').checked ? 1 : 0
+      };
+      if (!data.name || !data.slug) { showToast('名称和Slug不能为空', 'error'); return; }
+      try {
+        const url = id ? `${API_BASE}/api/skills/${id}` : `${API_BASE}/api/skills`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || '保存失败');
+        }
+        const result = await res.json();
+        currentSkillId = result.skill.id;
+        document.getElementById('skillId').value = result.skill.id;
+        document.getElementById('exportSkillBtn').style.display = 'inline-flex';
+        document.getElementById('fileManager').style.display = 'block';
+        showToast('保存成功', 'success');
+        loadAdminSkills();
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    function exportSkill(id) { window.open(`${API_BASE}/api/skills/${id}/export`, '_blank'); }
+    function exportCurrentSkill() { if (currentSkillId) exportSkill(currentSkillId); }
+
+    async function handleZipImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch(`${API_BASE}/api/skills/import`, {
+          method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '导入失败');
+        showToast(`导入成功：${data.skill.name}`, 'success');
+        loadAdminSkills();
+      } catch (e) { showToast(e.message, 'error'); }
+      event.target.value = '';
     }
 
     async function deleteSkill(id) {
-      if (!confirm('确定要删除这个技能吗？')) return;
+      if (!confirm('确定要删除这个技能吗？此操作不可恢复！')) return;
       try {
-        await api(`/api/skills/${id}`, { method: 'DELETE' });
-        toast('删除成功', 'success');
+        const res = await fetch(`${API_BASE}/api/skills/${id}`, {
+          method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('删除失败');
+        showToast('已删除', 'success');
         loadAdminSkills();
-      } catch (e) {
-        toast('删除失败: ' + e.message, 'error');
-      }
+      } catch (e) { showToast(e.message, 'error'); }
     }
 
-    function openCreateUserModal() {
-      document.getElementById('createUserModal').classList.add('active');
-    }
+    function showUserModal() { openModal('userModal'); }
 
-    async function doCreateUser() {
-      const username = document.getElementById('newUsername').value.trim();
-      const password = document.getElementById('newPassword').value;
-      const role = document.getElementById('newUserRole').value;
-      
-      if (!username || !password) {
-        toast('请填写用户名和密码', 'error');
-        return;
-      }
-      
+    async function createUser() {
+      const data = { username: document.getElementById('newUsername').value, password: document.getElementById('newPassword').value, role: document.getElementById('newUserRole').value };
+      if (!data.username || !data.password) { showToast('请填写完整', 'error'); return; }
       try {
-        await api('/api/users', {
-          method: 'POST',
-          body: JSON.stringify({ username, password, role })
+        const res = await fetch(`${API_BASE}/api/users`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(data)
         });
-        toast('创建成功', 'success');
-        closeModal('createUserModal');
-        loadUsers();
-      } catch (e) {
-        toast('创建失败: ' + e.message, 'error');
-      }
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error); }
+        showToast('用户已创建', 'success');
+        closeModal('userModal');
+        loadAdminUsers();
+      } catch (e) { showToast(e.message, 'error'); }
     }
 
-    // ============ 上传技能 ============
-    function showUploadModal() {
-      if (!currentUser || currentUser.role !== 'admin') {
-        toast('请先以管理员身份登录', 'error');
-        return;
-      }
-      document.getElementById('uploadModal').classList.add('active');
-    }
-
-    function switchUploadTab(tab) {
-      uploadTab = tab;
-      document.getElementById('tabFormUpload').className = 'btn ' + (tab === 'form' ? 'btn-primary' : 'btn-outline');
-      document.getElementById('tabJsonUpload').className = 'btn ' + (tab === 'json' ? 'btn-primary' : 'btn-outline');
-      document.getElementById('formUploadPanel').style.display = tab === 'form' ? 'block' : 'none';
-      document.getElementById('jsonUploadPanel').style.display = tab === 'json' ? 'block' : 'none';
-    }
-
-    async function doUpload() {
-      let payload;
-      
-      if (uploadTab === 'form') {
-        const name = document.getElementById('uploadName').value.trim();
-        const slug = document.getElementById('uploadSlug').value.trim();
-        const content = document.getElementById('uploadContent').value.trim();
-        
-        if (!name || !slug || !content) {
-          toast('请填写必填项（名称、Slug、内容）', 'error');
-          return;
-        }
-        
-        payload = {
-          name,
-          slug,
-          author: document.getElementById('uploadAuthor').value.trim(),
-          version: document.getElementById('uploadVersion').value.trim() || '1.0.0',
-          category: document.getElementById('uploadCategory').value,
-          tags: document.getElementById('uploadTags').value.trim(),
-          icon: document.getElementById('uploadIcon').value.trim() || '📦',
-          description: document.getElementById('uploadDescription').value.trim(),
-          content,
-          readme: document.getElementById('uploadReadme').value.trim()
-        };
-      } else {
-        try {
-          payload = JSON.parse(document.getElementById('uploadJson').value);
-        } catch (e) {
-          toast('JSON 格式错误', 'error');
-          return;
-        }
-      }
-      
+    async function deleteUser(id) {
+      if (!confirm('确定要删除这个用户吗？')) return;
       try {
-        await api('/api/skills', {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-        
-        toast('上传成功', 'success');
-        closeModal('uploadModal');
-        
-        // 清空表单
-        if (uploadTab === 'form') {
-          ['uploadName', 'uploadSlug', 'uploadAuthor', 'uploadVersion', 'uploadTags', 'uploadDescription', 'uploadContent', 'uploadReadme'].forEach(id => {
-            document.getElementById(id).value = '';
-          });
-        } else {
-          document.getElementById('uploadJson').value = '';
-        }
-        
-        loadSkills();
-        loadStats();
-        if (document.getElementById('page-admin').classList.contains('active')) {
-          loadAdminSkills();
-        }
-      } catch (e) {
-        toast('上传失败: ' + e.message, 'error');
+        const res = await fetch(`${API_BASE}/api/users/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) throw new Error('删除失败');
+        showToast('已删除', 'success');
+        loadAdminUsers();
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    function handleSearch(e) {
+      if (e.key === 'Enter') {
+        const q = e.target.value.trim();
+        if (q) { window.browseCategory = 'all'; document.getElementById('sortSelect').value = 'downloads'; loadSkills(); }
       }
     }
 
-    // ============ 模态框 ============
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function closeModalOnBackdrop(e) { if (e.target === e.currentTarget) e.currentTarget.style.display = 'none'; }
 
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          overlay.classList.remove('active');
-        }
-      });
-    });
+    document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', closeModalOnBackdrop));
 
-    // ============ Toast ============
-    function toast(message, type = 'success') {
+    function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+      toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>${message}`;
       container.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.style.animation = 'slideIn 0.3s ease reverse';
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
+      setTimeout(() => toast.remove(), 3000);
     }
 
-    // ============ 客户端配置 ============
-    function updateMarketUrl() {
-      const url = window.location.origin;
-      document.getElementById('marketUrl').textContent = url;
-      document.getElementById('cliAddCmd').textContent = `clawhub add-market ${url}`;
-      document.getElementById('openclawConfig').textContent = `{\n  "default_market": "${url}",\n  "markets": ["${url}"]\n}`;
-      document.getElementById('cursorConfig').textContent = `{\n  "mcpServers": {\n    "clawhub": {\n      "command": "clawhub",\n      "args": ["mcp", "--market", "${url}"]\n    }\n  }\n}`;
-      document.getElementById('claudeConfig').textContent = `{\n  "mcpServers": {\n    "clawhub": {\n      "command": "clawhub",\n      "args": ["mcp", "--market", "${url}"]\n    }\n  }\n}`;
-      document.getElementById('apiEndpoint').textContent = `${url}/api/v1/install`;
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => showToast('已复制', 'success')).catch(() => showToast('复制失败', 'error'));
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
   </script>
 </body>
