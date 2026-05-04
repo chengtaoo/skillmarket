@@ -767,31 +767,57 @@ app.delete('/api/skills/:id', authenticate, requireAdmin, (req, res) => {
 });
 
 // 下载技能包（JSON 格式，用于客户端）
+// 下载技能（标准 ZIP 格式，兼容 Clawhub/OpenClaw）
 app.get('/api/skills/:id/download', (req, res) => {
   const skills = readJson(SKILLS_FILE, []);
   const skill = skills.find(s => s.id === req.params.id || s.slug === req.params.id);
   if (!skill) return res.status(404).json({ error: '技能不存在' });
   
+  // 增加下载计数
   skill.downloads = (skill.downloads || 0) + 1;
   writeJson(SKILLS_FILE, skills);
   
-  const packageFile = {
-    name: skill.name,
+  const skillDir = getSkillDir(skill.id);
+  const zipPath = join(TEMP_DIR, `${skill.slug}-${skill.version}-download-${Date.now()}.zip`);
+  
+  const output = createWriteStream(zipPath);
+  const archive = archiver('zip', { zlib: { level: 9 } });
+  
+  output.on('close', () => {
+    res.download(zipPath, `${skill.slug}-${skill.version}.zip`, (err) => {
+      if (err) console.error('下载失败:', err);
+      if (existsSync(zipPath)) unlinkSync(zipPath);
+    });
+  });
+  
+  archive.on('error', (err) => {
+    res.status(500).json({ error: err.message });
+  });
+  
+  archive.pipe(output);
+  
+  // 添加 _meta.json（Clawhub 标准格式）
+  archive.append(JSON.stringify({
     slug: skill.slug,
     version: skill.version,
-    author: skill.author,
-    description: skill.description,
-    category: skill.category,
-    tags: skill.tags ? skill.tags.split(',') : [],
-    icon: skill.icon,
-    content: skill.content,
-    readme: skill.readme,
-    files: []
-  };
+    publishedAt: new Date(skill.created_at).getTime()
+  }, null, 2), { name: '_meta.json' });
   
-  res.setHeader('Content-Disposition', `attachment; filename="${skill.slug}.skill.json`);
-  res.setHeader('Content-Type', 'application/json');
-  res.json(packageFile);
+  // 添加 SKILL.md（带 frontmatter）
+  const skillMdContent = `---\nname: ${skill.name}\ndescription: ${skill.description || ''}\n---\n\n${skill.content || ''}`;
+  archive.append(skillMdContent, { name: 'SKILL.md' });
+  
+  // 添加 README.md（可选）
+  if (skill.readme) {
+    archive.append(skill.readme, { name: 'README.md' });
+  }
+  
+  // 添加 scripts/ 目录（技能文件）
+  if (existsSync(skillDir)) {
+    archive.directory(skillDir, 'scripts');
+  }
+  
+  archive.finalize();
 });
 
 // 记录安装
