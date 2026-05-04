@@ -1,5 +1,6 @@
 # 私有化技能市场 Docker 镜像
-FROM node:18-alpine
+# 使用阿里云镜像加速
+FROM registry.cn-shanghai.aliyuncs.com/library/node:18-alpine
 
 # 设置工作目录
 WORKDIR /app
