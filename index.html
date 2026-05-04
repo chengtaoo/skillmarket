@@ -450,6 +450,7 @@
       document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
       document.querySelector(`.nav-link[data-page="${page}"]`)?.classList.add('active');
       if (page === 'admin' && token) loadAdminData();
+      if (page === 'browse') { window.browseCategory = 'all'; loadSkills(); }
     }
 
     function showAdminTab(tab) {
