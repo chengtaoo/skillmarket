@@ -566,7 +566,7 @@
       const container = document.getElementById('skillsGrid');
       container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> 加载中...</div>';
       try {
-        const sort = document.getElementById('sortSelect').?.value || 'downloads';
+        const sort = document.getElementById('sortSelect')?.value || 'downloads';
         const category = window.browseCategory || 'all';
         const res = await fetch(`${API_BASE}/api/skills?sort=${sort}&category=${category}&status=all`);
         const data = await res.json();
