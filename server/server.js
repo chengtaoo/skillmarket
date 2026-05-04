@@ -1,17 +1,25 @@
 /**
- * 私有化技能市场 - 服务端
- * 使用 JSON 文件存储，无需数据库
+ * 私有化技能市场 - 服务端 v2.0
+ * 支持文件上传、ZIP导入导出、文件系统存储
  */
 
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import multer from 'multer';
+import { createWriteStream } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, copyFileSync, statSync, readdir } from 'fs';
+import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
+import { createGzip } from 'zlib';
+import { pipeline } from 'stream/promises';
+import { promisify } from 'util';
+import archiver from 'archiver';
+import unzipper from 'unzipper';
 
+const pipe = promisify(pipeline);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -19,12 +27,24 @@ const __dirname = dirname(__filename);
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const DATA_DIR = join(__dirname, 'data');
-const SKILLS_FILE = join(DATA_DIR, 'skills.json');
-const USERS_FILE = join(DATA_DIR, 'users.json');
-const CATEGORIES_FILE = join(DATA_DIR, 'categories.json');
+const UPLOADS_DIR = join(__dirname, 'uploads');      // 技能文件存储目录
+const SKILLS_DIR = join(UPLOADS_DIR, 'skills');    // 每个技能的独立目录
+const TEMP_DIR = join(__dirname, 'temp');          // 临时文件目录
 
-// 确保数据目录存在
-if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+// 确保目录存在
+[DATA_DIR, UPLOADS_DIR, SKILLS_DIR, TEMP_DIR].forEach(dir => {
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+});
+
+// ============ Multer 配置（文件上传）============
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, TEMP_DIR),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${randomUUID()}${extname(file.originalname)}`)
+});
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 } // 50MB 限制
+});
 
 // ============ 数据存储（JSON文件） ============
 function readJson(file, defaultValue = []) {
@@ -74,6 +94,8 @@ function initData() {
       { id: 'dev', name: '开发工具', icon: '💻', color: '#10b981' },
       { id: 'office', name: '办公效率', icon: '📊', color: '#3b82f6' },
       { id: 'knowledge', name: '知识管理', icon: '📚', color: '#8b5cf6' },
+      { id: 'data', name: '数据查询', icon: '🔢', color: '#14b8a6' },
+      { id: 'search', name: '内网搜索', icon: '🔍', color: '#f97316' },
       { id: 'other', name: '其他', icon: '📦', color: '#6b7280' }
     ];
     writeJson(CATEGORIES_FILE, categories);
@@ -98,78 +120,9 @@ function initData() {
         rating: 4.8,
         installs: 89,
         status: 'approved',
-        content: `# multi-search-engine Skill
-
-## 功能特性
-- 支持16个搜索引擎
-- 高级搜索语法
-- 时间范围过滤
-- 隐私保护模式
-
-## 安装命令
-\`\`\`bash
-clawhub install multi-search-engine
-\`\`\`
-`,
-        readme: `# 多搜索引擎聚合技能
-
-集成7个中文搜索引擎和9个国际搜索引擎，是进行网络信息检索的强力工具。`,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: randomUUID(),
-        name: '企业工商信息查询',
-        slug: 'plugin-enterprise-search',
-        description: '支持查询企业基本信息、工商信息、投资信息、资质证书、股权信息等。',
-        author: 'SkillMarket',
-        version: '1.0.0',
-        category: 'dev',
-        tags: '企业查询,工商信息,天眼查',
-        icon: '🏢',
-        featured: 1,
-        downloads: 85,
-        rating: 4.9,
-        installs: 62,
-        status: 'approved',
-        content: `# 企业工商信息查询 Skill
-
-## 功能
-- 企业基本信息查询
-- 工商信息展示
-- 投资关系图谱
-- 股权结构分析`,
-        readme: `# 企业工商信息查询
-
-支持多维度企业信息查询，是商务调研和法律尽职调查的得力助手。`,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: randomUUID(),
-        name: 'AI视频分析',
-        slug: 'analyze-video-by-qwen',
-        description: '使用阿里云 Qwen 3.5 Plus 多模态模型对视频进行智能分析，提取关键帧和内容理解。',
-        author: 'SkillMarket',
-        version: '1.0.0',
-        category: 'video',
-        tags: '视频分析,AI,Qwen,多模态',
-        icon: '🎥',
-        featured: 0,
-        downloads: 56,
-        rating: 4.6,
-        installs: 34,
-        status: 'approved',
-        content: `# AI视频分析 Skill
-
-## 功能
-- 视频关键帧提取
-- 内容智能理解
-- 语音转文字
-- 场景识别`,
-        readme: `# AI视频分析
-
-基于阿里云通义千问模型的视频内容分析工具。`,
+        content: `# multi-search-engine Skill\n\n## 功能特性\n- 支持16个搜索引擎\n- 高级搜索语法\n- 时间范围过滤\n- 隐私保护模式\n\n## 安装命令\n\`\`\`bash\nclawhub install multi-search-engine\n\`\`\`\n`,
+        readme: `# 多搜索引擎聚合技能\n\n集成7个中文搜索引擎和9个国际搜索引擎，是进行网络信息检索的强力工具。`,
+        files: [],
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
@@ -178,6 +131,11 @@ clawhub install multi-search-engine
   }
 }
 
+// ============ 文件路径 ============
+const SKILLS_FILE = join(DATA_DIR, 'skills.json');
+const USERS_FILE = join(DATA_DIR, 'users.json');
+const CATEGORIES_FILE = join(DATA_DIR, 'categories.json');
+
 initData();
 
 // ============ Express 配置 ============
@@ -185,6 +143,59 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// ============ 工具函数 ============
+
+// 递归删除目录
+function deleteFolderRecursive(dirPath) {
+  if (existsSync(dirPath)) {
+    readdirSync(dirPath).forEach(file => {
+      const curPath = join(dirPath, file);
+      if (statSync(curPath).isDirectory()) {
+        deleteFolderRecursive(curPath);
+      } else {
+        unlinkSync(curPath);
+      }
+    });
+    const fs = require('fs');
+    fs.rmdirSync(dirPath);
+  }
+}
+
+// 获取技能的文件目录
+function getSkillDir(skillId) {
+  return join(SKILLS_DIR, skillId);
+}
+
+// 列出技能目录中的所有文件
+function listSkillFiles(skillId) {
+  const skillDir = getSkillDir(skillId);
+  if (!existsSync(skillDir)) return [];
+  
+  const files = [];
+  
+  function walk(dir, basePath = '') {
+    readdirSync(dir).forEach(file => {
+      const fullPath = join(dir, file);
+      const relativePath = basePath ? `${basePath}/${file}` : file;
+      const stat = statSync(fullPath);
+      
+      if (stat.isDirectory()) {
+        walk(fullPath, relativePath);
+      } else {
+        files.push({
+          name: file,
+          path: relativePath,
+          size: stat.size,
+          isDirectory: false
+        });
+      }
+    });
+  }
+  
+  walk(skillDir);
+  return files;
+}
 
 // ============ JWT 中间件 ============
 const authenticate = (req, res, next) => {
@@ -211,7 +222,6 @@ const requireAdmin = (req, res, next) => {
 
 // ============ 认证路由 ============
 
-// 登录
 app.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body;
   const users = readJson(USERS_FILE, []);
@@ -225,12 +235,10 @@ app.post('/api/auth/login', (req, res) => {
   res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
 });
 
-// 获取当前用户
 app.get('/api/auth/me', authenticate, (req, res) => {
   res.json({ user: req.user });
 });
 
-// 注册（仅第一个用户）
 app.post('/api/auth/register', (req, res) => {
   const { username, password } = req.body;
   const users = readJson(USERS_FILE, []);
@@ -249,13 +257,11 @@ app.post('/api/auth/register', (req, res) => {
   res.json({ token, user: { id, username, role: 'admin' } });
 });
 
-// 获取用户列表
 app.get('/api/users', authenticate, requireAdmin, (req, res) => {
   const users = readJson(USERS_FILE, []);
   res.json({ users: users.map(u => ({ ...u, password: undefined })) });
 });
 
-// 创建用户
 app.post('/api/users', authenticate, requireAdmin, (req, res) => {
   const { username, password, role } = req.body;
   const users = readJson(USERS_FILE, []);
@@ -280,12 +286,10 @@ app.post('/api/users', authenticate, requireAdmin, (req, res) => {
 
 // ============ 技能路由 ============
 
-// 获取技能列表
 app.get('/api/skills', (req, res) => {
   const { category, search, sort, status, featured } = req.query;
   let skills = readJson(SKILLS_FILE, []);
   
-  // 默认只显示已审核的技能
   if (status !== 'all') {
     skills = skills.filter(s => s.status === (status || 'approved'));
   }
@@ -307,7 +311,6 @@ app.get('/api/skills', (req, res) => {
     skills = skills.filter(s => s.featured === 1);
   }
   
-  // 排序
   switch (sort) {
     case 'downloads': skills.sort((a, b) => (b.downloads || 0) - (a.downloads || 0)); break;
     case 'rating': skills.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
@@ -316,32 +319,347 @@ app.get('/api/skills', (req, res) => {
     default: skills.sort((a, b) => (b.featured || 0) - (a.featured || 0) || (b.downloads || 0) - (a.downloads || 0));
   }
   
-  res.json({ skills });
+  // 返回技能列表（不含文件内容，减少传输量）
+  const skillSummaries = skills.map(s => ({
+    ...s,
+    files: undefined,
+    fileCount: listSkillFiles(s.id).length
+  }));
+  
+  res.json({ skills: skillSummaries });
 });
 
-// 获取单个技能
 app.get('/api/skills/:id', (req, res) => {
   const skills = readJson(SKILLS_FILE, []);
   const skill = skills.find(s => s.id === req.params.id || s.slug === req.params.id);
   if (!skill) return res.status(404).json({ error: '技能不存在' });
-  res.json({ skill });
+  
+  // 返回完整技能信息，包括文件列表
+  const files = listSkillFiles(skill.id);
+  res.json({ 
+    skill: {
+      ...skill,
+      files
+    }
+  });
 });
 
-// 上传技能（需管理员）
+// ============ 文件上传 API ============
+
+// 上传单个文件到技能
+app.post('/api/skills/:id/files', authenticate, requireAdmin, upload.single('file'), (req, res) => {
+  const skills = readJson(SKILLS_FILE, []);
+  const skill = skills.find(s => s.id === req.params.id);
+  if (!skill) return res.status(404).json({ error: '技能不存在' });
+  
+  if (!req.file) {
+    return res.status(400).json({ error: '请选择要上传的文件' });
+  }
+  
+  const { path: filePath, originalname, size } = req.file;
+  const skillDir = getSkillDir(skill.id);
+  
+  // 创建技能目录
+  if (!existsSync(skillDir)) mkdirSync(skillDir, { recursive: true });
+  
+  // 移动文件到技能目录
+  const destPath = join(skillDir, originalname);
+  copyFileSync(filePath, destPath);
+  unlinkSync(filePath);
+  
+  const newFile = {
+    id: randomUUID(),
+    name: originalname,
+    path: originalname,
+    size,
+    created_at: new Date().toISOString()
+  };
+  
+  // 更新技能记录
+  skill.files = skill.files || [];
+  skill.files.push(newFile);
+  skill.updated_at = new Date().toISOString();
+  writeJson(SKILLS_FILE, skills);
+  
+  res.json({ success: true, file: newFile });
+});
+
+// 上传多个文件到技能
+app.post('/api/skills/:id/files/multiple', authenticate, requireAdmin, upload.array('files', 20), (req, res) => {
+  const skills = readJson(SKILLS_FILE, []);
+  const skill = skills.find(s => s.id === req.params.id);
+  if (!skill) return res.status(404).json({ error: '技能不存在' });
+  
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: '请选择要上传的文件' });
+  }
+  
+  const skillDir = getSkillDir(skill.id);
+  if (!existsSync(skillDir)) mkdirSync(skillDir, { recursive: true });
+  
+  const uploadedFiles = [];
+  
+  req.files.forEach(file => {
+    const destPath = join(skillDir, file.originalname);
+    copyFileSync(file.path, destPath);
+    unlinkSync(file.path);
+    
+    const newFile = {
+      id: randomUUID(),
+      name: file.originalname,
+      path: file.originalname,
+      size: file.size,
+      created_at: new Date().toISOString()
+    };
+    uploadedFiles.push(newFile);
+  });
+  
+  skill.files = skill.files || [];
+  skill.files.push(...uploadedFiles);
+  skill.updated_at = new Date().toISOString();
+  writeJson(SKILLS_FILE, skills);
+  
+  res.json({ success: true, files: uploadedFiles });
+});
+
+// 下载技能文件
+app.get('/api/skills/:id/files/:fileId', (req, res) => {
+  const skills = readJson(SKILLS_FILE, []);
+  const skill = skills.find(s => s.id === req.params.id);
+  if (!skill) return res.status(404).json({ error: '技能不存在' });
+  
+  const file = (skill.files || []).find(f => f.id === req.params.fileId || f.path === req.params.fileId);
+  if (!file) return res.status(404).json({ error: '文件不存在' });
+  
+  const filePath = join(getSkillDir(skill.id), file.path);
+  if (!existsSync(filePath)) return res.status(404).json({ error: '文件已丢失' });
+  
+  res.download(filePath, file.name);
+});
+
+// 删除技能文件
+app.delete('/api/skills/:id/files/:fileId', authenticate, requireAdmin, (req, res) => {
+  const skills = readJson(SKILLS_FILE, []);
+  const skill = skills.find(s => s.id === req.params.id);
+  if (!skill) return res.status(404).json({ error: '技能不存在' });
+  
+  const fileIndex = (skill.files || []).findIndex(f => f.id === req.params.fileId);
+  if (fileIndex === -1) return res.status(404).json({ error: '文件不存在' });
+  
+  const file = skill.files[fileIndex];
+  const filePath = join(getSkillDir(skill.id), file.path);
+  
+  if (existsSync(filePath)) unlinkSync(filePath);
+  
+  skill.files.splice(fileIndex, 1);
+  skill.updated_at = new Date().toISOString();
+  writeJson(SKILLS_FILE, skills);
+  
+  res.json({ success: true });
+});
+
+// ============ ZIP 导入/导出 API ============
+
+// 导出技能为 ZIP 包
+app.get('/api/skills/:id/export', authenticate, requireAdmin, (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const skills = readJson(SKILLS_FILE, []);
+      const skill = skills.find(s => s.id === req.params.id);
+      if (!skill) {
+        res.status(404).json({ error: '技能不存在' });
+        return;
+      }
+      
+      const skillDir = getSkillDir(skill.id);
+      const zipPath = join(TEMP_DIR, `${skill.slug}-${skill.version}-${Date.now()}.zip`);
+      
+      // 创建 ZIP
+      const output = createWriteStream(zipPath);
+      const archive = archiver('zip', { zlib: { level: 9 } });
+      
+      output.on('close', () => {
+        res.download(zipPath, `${skill.slug}-${skill.version}.zip`, (err) => {
+          if (err) console.error('下载失败:', err);
+          // 清理临时 ZIP
+          if (existsSync(zipPath)) unlinkSync(zipPath);
+        });
+      });
+      
+      archive.on('error', (err) => {
+        res.status(500).json({ error: err.message });
+      });
+      
+      archive.pipe(output);
+      
+      // 添加 manifest.json
+      const manifest = {
+        name: skill.name,
+        slug: skill.slug,
+        version: skill.version,
+        author: skill.author,
+        description: skill.description,
+        category: skill.category,
+        tags: skill.tags,
+        icon: skill.icon,
+        created_at: skill.created_at
+      };
+      archive.append(JSON.stringify(manifest, null, 2), { name: 'manifest.json' });
+      
+      // 添加 skill.md
+      if (skill.content) {
+        archive.append(skill.content, { name: 'skill.md' });
+      }
+      
+      // 添加 README.md
+      if (skill.readme) {
+        archive.append(skill.readme, { name: 'README.md' });
+      }
+      
+      // 添加所有文件
+      if (existsSync(skillDir)) {
+        archive.directory(skillDir, 'files');
+      }
+      
+      archive.finalize();
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+});
+
+// 导入 ZIP 包
+app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: '请选择要导入的 ZIP 文件' });
+  }
+  
+  const zipPath = req.file.path;
+  const extractDir = join(TEMP_DIR, `import-${randomUUID()}`);
+  
+  try {
+    // 解压 ZIP
+    mkdirSync(extractDir, { recursive: true });
+    
+    await new Promise((resolve, reject) => {
+      const fs = require('fs');
+      fs.createReadStream(zipPath)
+        .pipe(unzipper.Extract({ path: extractDir }))
+        .on('close', resolve)
+        .on('error', reject);
+    });
+    
+    // 读取 manifest.json
+    const manifestPath = join(extractDir, 'manifest.json');
+    if (!existsSync(manifestPath)) {
+      throw new Error('无效的技能包：缺少 manifest.json');
+    }
+    
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+    
+    // 检查 slug 是否已存在
+    const skills = readJson(SKILLS_FILE, []);
+    if (skills.find(s => s.slug === manifest.slug)) {
+      throw new Error(`技能 slug "${manifest.slug}" 已存在，请先删除或修改`);
+    }
+    
+    // 创建技能
+    const skillId = randomUUID();
+    const skillDir = getSkillDir(skillId);
+    mkdirSync(skillDir, { recursive: true });
+    
+    // 复制文件
+    const filesDir = join(extractDir, 'files');
+    const importedFiles = [];
+    
+    if (existsSync(filesDir)) {
+      const copyRecursive = (src, dest) => {
+        readdirSync(src).forEach(file => {
+          const srcPath = join(src, file);
+          const destPath = join(dest, file);
+          const stat = statSync(srcPath);
+          if (stat.isDirectory()) {
+            mkdirSync(destPath, { recursive: true });
+            copyRecursive(srcPath, destPath);
+          } else {
+            copyFileSync(srcPath, destPath);
+            importedFiles.push({
+              id: randomUUID(),
+              name: file,
+              path: file,
+              size: statSync(destPath).size,
+              created_at: new Date().toISOString()
+            });
+          }
+        });
+      };
+      copyRecursive(filesDir, skillDir);
+    }
+    
+    // 读取 skill.md 和 README.md
+    const skillMdPath = join(extractDir, 'skill.md');
+    const readmeMdPath = join(extractDir, 'README.md');
+    
+    const newSkill = {
+      id: skillId,
+      name: manifest.name || manifest.slug,
+      slug: manifest.slug,
+      description: manifest.description || '',
+      author: manifest.author || '',
+      version: manifest.version || '1.0.0',
+      category: manifest.category || 'other',
+      tags: manifest.tags || '',
+      icon: manifest.icon || '📦',
+      content: existsSync(skillMdPath) ? readFileSync(skillMdPath, 'utf-8') : '',
+      readme: existsSync(readmeMdPath) ? readFileSync(readmeMdPath, 'utf-8') : '',
+      files: importedFiles,
+      featured: 0,
+      downloads: 0,
+      rating: 5.0,
+      installs: 0,
+      status: 'approved',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    skills.push(newSkill);
+    writeJson(SKILLS_FILE, skills);
+    
+    // 清理临时文件
+    deleteFolderRecursive(extractDir);
+    unlinkSync(zipPath);
+    
+    res.json({ success: true, skill: newSkill });
+    
+  } catch (error) {
+    // 清理临时文件
+    if (existsSync(extractDir)) deleteFolderRecursive(extractDir);
+    if (existsSync(zipPath)) unlinkSync(zipPath);
+    
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// ============ 技能 CRUD ============
+
 app.post('/api/skills', authenticate, requireAdmin, (req, res) => {
   const { name, slug, description, author, version, category, tags, icon, content, readme } = req.body;
   
-  if (!name || !slug || !content) {
-    return res.status(400).json({ error: '名称、slug和内容是必填项' });
+  if (!name || !slug) {
+    return res.status(400).json({ error: '名称和slug是必填项' });
   }
   
   const skills = readJson(SKILLS_FILE, []);
   if (skills.find(s => s.slug === slug)) {
-    return res.status(400).json({ error: 'Slug已存在，请使用唯一的slug' });
+    return res.status(400).json({ error: 'Slug已存在' });
   }
   
+  const skillId = randomUUID();
+  const skillDir = getSkillDir(skillId);
+  mkdirSync(skillDir, { recursive: true });
+  
   const newSkill = {
-    id: randomUUID(),
+    id: skillId,
     name,
     slug,
     description: description || '',
@@ -350,8 +668,9 @@ app.post('/api/skills', authenticate, requireAdmin, (req, res) => {
     category: category || 'other',
     tags: tags || '',
     icon: icon || '📦',
-    content,
+    content: content || '',
     readme: readme || '',
+    files: [],
     featured: 0,
     downloads: 0,
     rating: 5.0,
@@ -367,7 +686,6 @@ app.post('/api/skills', authenticate, requireAdmin, (req, res) => {
   res.json({ success: true, skill: newSkill });
 });
 
-// 更新技能（需管理员）
 app.put('/api/skills/:id', authenticate, requireAdmin, (req, res) => {
   const skills = readJson(SKILLS_FILE, []);
   const idx = skills.findIndex(s => s.id === req.params.id);
@@ -395,24 +713,26 @@ app.put('/api/skills/:id', authenticate, requireAdmin, (req, res) => {
   res.json({ success: true, skill: skills[idx] });
 });
 
-// 删除技能（需管理员）
 app.delete('/api/skills/:id', authenticate, requireAdmin, (req, res) => {
   let skills = readJson(SKILLS_FILE, []);
   const idx = skills.findIndex(s => s.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: '技能不存在' });
+  
+  // 删除技能文件目录
+  const skillDir = getSkillDir(req.params.id);
+  if (existsSync(skillDir)) deleteFolderRecursive(skillDir);
   
   skills = skills.filter(s => s.id !== req.params.id);
   writeJson(SKILLS_FILE, skills);
   res.json({ success: true });
 });
 
-// 下载技能包
+// 下载技能包（JSON 格式，用于客户端）
 app.get('/api/skills/:id/download', (req, res) => {
   const skills = readJson(SKILLS_FILE, []);
   const skill = skills.find(s => s.id === req.params.id || s.slug === req.params.id);
   if (!skill) return res.status(404).json({ error: '技能不存在' });
   
-  // 增加下载计数
   skill.downloads = (skill.downloads || 0) + 1;
   writeJson(SKILLS_FILE, skills);
   
@@ -467,18 +787,15 @@ app.get('/api/stats', (req, res) => {
 });
 
 // ============ 客户端协议路由 ============
-
-// .well-known/skillmarket 协议端点
 app.get('/.well-known/skillmarket', (req, res) => {
   res.json({
     version: '1.0',
     name: 'SkillMarket',
     url: req.protocol + '://' + req.get('host'),
-    capabilities: ['search', 'install', 'publish']
+    capabilities: ['search', 'install', 'publish', 'file-upload', 'zip-import']
   });
 });
 
-// 客户端安装协议
 app.post('/api/v1/install', (req, res) => {
   const { slug, clientType, clientVersion } = req.body;
   const skills = readJson(SKILLS_FILE, []);
@@ -488,7 +805,6 @@ app.post('/api/v1/install', (req, res) => {
     return res.status(404).json({ error: '技能不存在或未审核' });
   }
   
-  // 记录安装
   const idx = skills.findIndex(s => s.id === skill.id);
   skills[idx].installs = (skills[idx].installs || 0) + 1;
   writeJson(SKILLS_FILE, skills);
@@ -504,7 +820,6 @@ app.post('/api/v1/install', (req, res) => {
   });
 });
 
-// 客户端搜索协议
 app.get('/api/v1/search', (req, res) => {
   const { q, category, limit } = req.query;
   let skills = readJson(SKILLS_FILE, []).filter(s => s.status === 'approved');
@@ -528,20 +843,17 @@ app.get('/api/v1/search', (req, res) => {
   res.json({ skills });
 });
 
-// ============ 静态文件服务（前端页面）===========
+// ============ 静态文件服务 ============
 const STATIC_DIR = join(__dirname, '..');
 
-// 根路径返回 index.html
 app.get('/', (req, res) => {
   res.sendFile(join(STATIC_DIR, 'index.html'));
 });
 
-// index.html 路径也返回 index.html
 app.get('/index.html', (req, res) => {
   res.sendFile(join(STATIC_DIR, 'index.html'));
 });
 
-// SPA 路由支持（所有非API路径返回 index.html）
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(join(STATIC_DIR, 'index.html'));
@@ -552,7 +864,7 @@ app.listen(PORT, () => {
   console.log(`
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
-║     🎉 私有化技能市场服务器已启动                         ║
+║     🎉 私有化技能市场服务器已启动 (v2.0)                  ║
 ║                                                          ║
 ║     📍 地址: http://localhost:${PORT}                       ║
 ║     🌐 协议: http://localhost:${PORT}/.well-known/skillmarket
@@ -561,7 +873,9 @@ app.listen(PORT, () => {
 ║        用户名: admin                                     ║
 ║        密码: admin123                                    ║
 ║                                                          ║
-║     ⚠️  请在生产环境中修改 JWT_SECRET 和管理员密码       ║
+║     ✨ 新功能：                                          ║
+║        📁 支持上传 Python/JS 等代码文件                  ║
+║        📦 支持 ZIP 包导入导出                            ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝
   `);
