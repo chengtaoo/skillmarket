@@ -8,8 +8,7 @@ import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
-import { createWriteStream } from 'fs';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, copyFileSync, statSync, readdir } from 'fs';
+import { createWriteStream, readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, copyFileSync, statSync, readdir, rmdirSync, createReadStream } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
@@ -157,8 +156,7 @@ function deleteFolderRecursive(dirPath) {
         unlinkSync(curPath);
       }
     });
-    const fs = require('fs');
-    fs.rmdirSync(dirPath);
+    rmdirSync(dirPath);
   }
 }
 
@@ -329,6 +327,115 @@ app.get('/api/skills', (req, res) => {
   res.json({ skills: skillSummaries });
 });
 
+app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: '请选择要导入的 ZIP 文件' });
+  }
+  
+  const zipPath = req.file.path;
+  const extractDir = join(TEMP_DIR, `import-${randomUUID()}`);
+  
+  try {
+    // 解压 ZIP
+    mkdirSync(extractDir, { recursive: true });
+    
+    await new Promise((resolve, reject) => {
+      createReadStream(zipPath)
+        .pipe(unzipper.Extract({ path: extractDir }))
+        .on('close', resolve)
+        .on('error', reject);
+    });
+    
+    // 读取 manifest.json
+    const manifestPath = join(extractDir, 'manifest.json');
+    if (!existsSync(manifestPath)) {
+      throw new Error('无效的技能包：缺少 manifest.json');
+    }
+    
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+    
+    // 检查 slug 是否已存在
+    const skills = readJson(SKILLS_FILE, []);
+    if (skills.find(s => s.slug === manifest.slug)) {
+      throw new Error(`技能 slug "${manifest.slug}" 已存在，请先删除或修改`);
+    }
+    
+    // 创建技能
+    const skillId = randomUUID();
+    const skillDir = getSkillDir(skillId);
+    mkdirSync(skillDir, { recursive: true });
+    
+    // 复制文件
+    const filesDir = join(extractDir, 'files');
+    const importedFiles = [];
+    
+    if (existsSync(filesDir)) {
+      const copyRecursive = (src, dest) => {
+        readdirSync(src).forEach(file => {
+          const srcPath = join(src, file);
+          const destPath = join(dest, file);
+          const stat = statSync(srcPath);
+          if (stat.isDirectory()) {
+            mkdirSync(destPath, { recursive: true });
+            copyRecursive(srcPath, destPath);
+          } else {
+            copyFileSync(srcPath, destPath);
+            importedFiles.push({
+              id: randomUUID(),
+              name: file,
+              path: file,
+              size: statSync(destPath).size,
+              created_at: new Date().toISOString()
+            });
+          }
+        });
+      };
+      copyRecursive(filesDir, skillDir);
+    }
+    
+    // 读取 skill.md 和 README.md
+    const skillMdPath = join(extractDir, 'skill.md');
+    const readmeMdPath = join(extractDir, 'README.md');
+    
+    const newSkill = {
+      id: skillId,
+      name: manifest.name || manifest.slug,
+      slug: manifest.slug,
+      description: manifest.description || '',
+      author: manifest.author || '',
+      version: manifest.version || '1.0.0',
+      category: manifest.category || 'other',
+      tags: manifest.tags || '',
+      icon: manifest.icon || '📦',
+      content: existsSync(skillMdPath) ? readFileSync(skillMdPath, 'utf-8') : '',
+      readme: existsSync(readmeMdPath) ? readFileSync(readmeMdPath, 'utf-8') : '',
+      files: importedFiles,
+      featured: 0,
+      downloads: 0,
+      rating: 5.0,
+      installs: 0,
+      status: 'approved',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    skills.push(newSkill);
+    writeJson(SKILLS_FILE, skills);
+    
+    // 清理临时文件
+    deleteFolderRecursive(extractDir);
+    unlinkSync(zipPath);
+    
+    res.json({ success: true, skill: newSkill });
+    
+  } catch (error) {
+    // 清理临时文件
+    if (existsSync(extractDir)) deleteFolderRecursive(extractDir);
+    if (existsSync(zipPath)) unlinkSync(zipPath);
+    
+    res.status(400).json({ error: error.message });
+  }
+});
 app.get('/api/skills/:id', (req, res) => {
   const skills = readJson(SKILLS_FILE, []);
   const skill = skills.find(s => s.id === req.params.id || s.slug === req.params.id);
@@ -529,116 +636,6 @@ app.get('/api/skills/:id/export', authenticate, requireAdmin, (req, res) => {
 });
 
 // 导入 ZIP 包
-app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file'), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: '请选择要导入的 ZIP 文件' });
-  }
-  
-  const zipPath = req.file.path;
-  const extractDir = join(TEMP_DIR, `import-${randomUUID()}`);
-  
-  try {
-    // 解压 ZIP
-    mkdirSync(extractDir, { recursive: true });
-    
-    await new Promise((resolve, reject) => {
-      const fs = require('fs');
-      fs.createReadStream(zipPath)
-        .pipe(unzipper.Extract({ path: extractDir }))
-        .on('close', resolve)
-        .on('error', reject);
-    });
-    
-    // 读取 manifest.json
-    const manifestPath = join(extractDir, 'manifest.json');
-    if (!existsSync(manifestPath)) {
-      throw new Error('无效的技能包：缺少 manifest.json');
-    }
-    
-    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-    
-    // 检查 slug 是否已存在
-    const skills = readJson(SKILLS_FILE, []);
-    if (skills.find(s => s.slug === manifest.slug)) {
-      throw new Error(`技能 slug "${manifest.slug}" 已存在，请先删除或修改`);
-    }
-    
-    // 创建技能
-    const skillId = randomUUID();
-    const skillDir = getSkillDir(skillId);
-    mkdirSync(skillDir, { recursive: true });
-    
-    // 复制文件
-    const filesDir = join(extractDir, 'files');
-    const importedFiles = [];
-    
-    if (existsSync(filesDir)) {
-      const copyRecursive = (src, dest) => {
-        readdirSync(src).forEach(file => {
-          const srcPath = join(src, file);
-          const destPath = join(dest, file);
-          const stat = statSync(srcPath);
-          if (stat.isDirectory()) {
-            mkdirSync(destPath, { recursive: true });
-            copyRecursive(srcPath, destPath);
-          } else {
-            copyFileSync(srcPath, destPath);
-            importedFiles.push({
-              id: randomUUID(),
-              name: file,
-              path: file,
-              size: statSync(destPath).size,
-              created_at: new Date().toISOString()
-            });
-          }
-        });
-      };
-      copyRecursive(filesDir, skillDir);
-    }
-    
-    // 读取 skill.md 和 README.md
-    const skillMdPath = join(extractDir, 'skill.md');
-    const readmeMdPath = join(extractDir, 'README.md');
-    
-    const newSkill = {
-      id: skillId,
-      name: manifest.name || manifest.slug,
-      slug: manifest.slug,
-      description: manifest.description || '',
-      author: manifest.author || '',
-      version: manifest.version || '1.0.0',
-      category: manifest.category || 'other',
-      tags: manifest.tags || '',
-      icon: manifest.icon || '📦',
-      content: existsSync(skillMdPath) ? readFileSync(skillMdPath, 'utf-8') : '',
-      readme: existsSync(readmeMdPath) ? readFileSync(readmeMdPath, 'utf-8') : '',
-      files: importedFiles,
-      featured: 0,
-      downloads: 0,
-      rating: 5.0,
-      installs: 0,
-      status: 'approved',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    
-    skills.push(newSkill);
-    writeJson(SKILLS_FILE, skills);
-    
-    // 清理临时文件
-    deleteFolderRecursive(extractDir);
-    unlinkSync(zipPath);
-    
-    res.json({ success: true, skill: newSkill });
-    
-  } catch (error) {
-    // 清理临时文件
-    if (existsSync(extractDir)) deleteFolderRecursive(extractDir);
-    if (existsSync(zipPath)) unlinkSync(zipPath);
-    
-    res.status(400).json({ error: error.message });
-  }
-});
 
 // ============ 技能 CRUD ============
 
