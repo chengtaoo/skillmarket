@@ -58,5 +58,41 @@
     "readme": "# AI视频分析\n\n基于阿里云通义千问模型的视频内容分析工具。",
     "created_at": "2026-05-04T02:28:09.815Z",
     "updated_at": "2026-05-04T02:28:09.815Z"
+  },
+  {
+    "id": "dd62eec5-6b3b-4965-a993-9b96161647d2",
+    "name": "send-file",
+    "slug": "send-file",
+    "description": "发送文件到消息平台",
+    "author": "",
+    "version": "1.0.1",
+    "category": "tool",
+    "tags": "",
+    "icon": "📦",
+    "content": "---\nname: send-file\ndescription: 发送文件到消息平台\n---\n\n# Send File\n\n发送文件到飞书、Telegram等平台。\n",
+    "readme": "",
+    "files": [
+      {
+        "id": "3ed5c52a-20ec-4745-aff1-e2ac57b97884",
+        "name": "send_feishu_file.py",
+        "path": "send_feishu_file.py",
+        "size": 133,
+        "created_at": "2026-05-04T06:37:23.277Z"
+      },
+      {
+        "id": "b15cccbe-11c9-451c-b42c-90f936891905",
+        "name": "send_file.sh",
+        "path": "send_file.sh",
+        "size": 36,
+        "created_at": "2026-05-04T06:37:23.293Z"
+      }
+    ],
+    "featured": 0,
+    "downloads": 0,
+    "rating": 5,
+    "installs": 0,
+    "status": "approved",
+    "created_at": "2026-05-04T06:37:23.296Z",
+    "updated_at": "2026-05-04T06:37:23.296Z"
   }
 ]

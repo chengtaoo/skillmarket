@@ -346,13 +346,47 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
         .on('error', reject);
     });
     
-    // 读取 manifest.json
+    // 读取 manifest.json（支持两种格式）
+    // 格式1: manifest.json（我们市场的格式）
+    // 格式2: _meta.json + SKILL.md（Clawhub/OpenClaw格式）
+    let manifest = null;
     const manifestPath = join(extractDir, 'manifest.json');
-    if (!existsSync(manifestPath)) {
-      throw new Error('无效的技能包：缺少 manifest.json');
-    }
+    const metaPath = join(extractDir, '_meta.json');
+    const clawhubSkillMdPath = join(extractDir, 'SKILL.md');
     
-    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+    if (existsSync(manifestPath)) {
+      // 格式1: manifest.json
+      manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+    } else if (existsSync(metaPath) && existsSync(clawhubSkillMdPath)) {
+      // 格式2: _meta.json + SKILL.md（Clawhub格式）
+      const meta = JSON.parse(readFileSync(metaPath, 'utf-8'));
+      const skillMd = readFileSync(clawhubSkillMdPath, 'utf-8');
+      
+      // 从 SKILL.md 头部提取 name 和 description
+      const frontMatter = skillMd.match(/^---\n([\s\S]*?)\n---/);
+      let name = meta.slug;
+      let description = '';
+      
+      if (frontMatter) {
+        const attrs = frontMatter[1];
+        const nameMatch = attrs.match(/name:\s*(.+)/);
+        const descMatch = attrs.match(/description:\s*(.+)/);
+        if (nameMatch) name = nameMatch[1].trim();
+        if (descMatch) description = descMatch[1].trim();
+      }
+      
+      manifest = {
+        name: name,
+        slug: meta.slug,
+        description: description,
+        version: meta.version || '1.0.0',
+        category: 'tool',
+        tags: '',
+        icon: '📦'
+      };
+    } else {
+      throw new Error('无效的技能包：缺少 manifest.json 或 _meta.json + SKILL.md');
+    }
     
     // 检查 slug 是否已存在
     const skills = readJson(SKILLS_FILE, []);
@@ -365,8 +399,14 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
     const skillDir = getSkillDir(skillId);
     mkdirSync(skillDir, { recursive: true });
     
-    // 复制文件
-    const filesDir = join(extractDir, 'files');
+    // 复制文件（支持两种目录结构）
+    // 格式1: files/（我们市场的格式）
+    // 格式2: scripts/（Clawhub/OpenClaw格式）
+    const filesDir = existsSync(join(extractDir, 'files')) 
+      ? join(extractDir, 'files') 
+      : existsSync(join(extractDir, 'scripts')) 
+        ? join(extractDir, 'scripts') 
+        : null;
     const importedFiles = [];
     
     if (existsSync(filesDir)) {
@@ -393,8 +433,10 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
       copyRecursive(filesDir, skillDir);
     }
     
-    // 读取 skill.md 和 README.md
-    const skillMdPath = join(extractDir, 'skill.md');
+    // 读取 skill.md/SKILL.md 和 README.md（大小写兼容）
+    const skillMdPath = existsSync(join(extractDir, 'SKILL.md')) 
+      ? join(extractDir, 'SKILL.md') 
+      : join(extractDir, 'skill.md');
     const readmeMdPath = join(extractDir, 'README.md');
     
     const newSkill = {
