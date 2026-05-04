@@ -8,13 +8,16 @@ import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, createReadStream, createWriteStream } from 'fs';
-import { join, dirname, extname, basename } from 'path';
+import { createWriteStream } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, copyFileSync, statSync, readdir } from 'fs';
+import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
-import { createGzip, createGunzip } from 'zlib';
+import { createGzip } from 'zlib';
 import { pipeline } from 'stream/promisify';
 import { promisify } from 'util';
+import archiver from 'archiver';
+import unzipper from 'unzipper';
 
 const pipe = promisify(pipeline);
 const __filename = fileURLToPath(import.meta.url);
@@ -146,15 +149,15 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // 递归删除目录
 function deleteFolderRecursive(dirPath) {
   if (existsSync(dirPath)) {
-    const fs = require('fs');
-    fs.readdirSync(dirPath).forEach(file => {
+    readdirSync(dirPath).forEach(file => {
       const curPath = join(dirPath, file);
-      if (fs.lstatSync(curPath).isDirectory()) {
+      if (statSync(curPath).isDirectory()) {
         deleteFolderRecursive(curPath);
       } else {
-        fs.unlinkSync(curPath);
+        unlinkSync(curPath);
       }
     });
+    const fs = require('fs');
     fs.rmdirSync(dirPath);
   }
 }
@@ -169,14 +172,13 @@ function listSkillFiles(skillId) {
   const skillDir = getSkillDir(skillId);
   if (!existsSync(skillDir)) return [];
   
-  const fs = require('fs');
   const files = [];
   
   function walk(dir, basePath = '') {
-    fs.readdirSync(dir).forEach(file => {
+    readdirSync(dir).forEach(file => {
       const fullPath = join(dir, file);
       const relativePath = basePath ? `${basePath}/${file}` : file;
-      const stat = fs.statSync(fullPath);
+      const stat = statSync(fullPath);
       
       if (stat.isDirectory()) {
         walk(fullPath, relativePath);
@@ -354,7 +356,7 @@ app.post('/api/skills/:id/files', authenticate, requireAdmin, upload.single('fil
     return res.status(400).json({ error: '请选择要上传的文件' });
   }
   
-  const { path: filePath, originalname, mimetype, size } = req.file;
+  const { path: filePath, originalname, size } = req.file;
   const skillDir = getSkillDir(skill.id);
   
   // 创建技能目录
@@ -362,15 +364,14 @@ app.post('/api/skills/:id/files', authenticate, requireAdmin, upload.single('fil
   
   // 移动文件到技能目录
   const destPath = join(skillDir, originalname);
-  const fs = require('fs');
-  fs.renameSync(filePath, destPath);
+  copyFileSync(filePath, destPath);
+  unlinkSync(filePath);
   
   const newFile = {
     id: randomUUID(),
     name: originalname,
     path: originalname,
     size,
-    mimetype,
     created_at: new Date().toISOString()
   };
   
@@ -396,19 +397,18 @@ app.post('/api/skills/:id/files/multiple', authenticate, requireAdmin, upload.ar
   const skillDir = getSkillDir(skill.id);
   if (!existsSync(skillDir)) mkdirSync(skillDir, { recursive: true });
   
-  const fs = require('fs');
   const uploadedFiles = [];
   
   req.files.forEach(file => {
     const destPath = join(skillDir, file.originalname);
-    fs.renameSync(file.path, destPath);
+    copyFileSync(file.path, destPath);
+    unlinkSync(file.path);
     
     const newFile = {
       id: randomUUID(),
       name: file.originalname,
       path: file.originalname,
       size: file.size,
-      mimetype: file.mimetype,
       created_at: new Date().toISOString()
     };
     uploadedFiles.push(newFile);
@@ -449,8 +449,7 @@ app.delete('/api/skills/:id/files/:fileId', authenticate, requireAdmin, (req, re
   const file = skill.files[fileIndex];
   const filePath = join(getSkillDir(skill.id), file.path);
   
-  const fs = require('fs');
-  if (existsSync(filePath)) fs.unlinkSync(filePath);
+  if (existsSync(filePath)) unlinkSync(filePath);
   
   skill.files.splice(fileIndex, 1);
   skill.updated_at = new Date().toISOString();
@@ -462,95 +461,70 @@ app.delete('/api/skills/:id/files/:fileId', authenticate, requireAdmin, (req, re
 // ============ ZIP 导入/导出 API ============
 
 // 导出技能为 ZIP 包
-app.get('/api/skills/:id/export', authenticate, requireAdmin, async (req, res) => {
-  const skills = readJson(SKILLS_FILE, []);
-  const skill = skills.find(s => s.id === req.params.id);
-  if (!skill) return res.status(404).json({ error: '技能不存在' });
-  
-  const skillDir = getSkillDir(skill.id);
-  const zipPath = join(TEMP_DIR, `${skill.slug}-${skill.version}.zip`);
-  
-  // 使用 Node.js 内置功能创建 ZIP
-  const fs = require('fs');
-  const { createArchive } = await import('tgz');
-  
-  // 准备导出数据
-  const exportData = {
-    manifest: {
-      name: skill.name,
-      slug: skill.slug,
-      version: skill.version,
-      author: skill.author,
-      description: skill.description,
-      category: skill.category,
-      tags: skill.tags,
-      icon: skill.icon,
-      content: skill.content,
-      readme: skill.readme,
-      created_at: skill.created_at
-    },
-    files: []
-  };
-  
-  // 列出所有文件
-  if (existsSync(skillDir)) {
-    const listFiles = (dir, basePath = '') => {
-      fs.readdirSync(dir).forEach(file => {
-        const fullPath = join(dir, file);
-        const relativePath = basePath ? `${basePath}/${file}` : file;
-        const stat = fs.statSync(fullPath);
-        if (stat.isDirectory()) {
-          listFiles(fullPath, relativePath);
-        } else {
-          exportData.files.push({
-            path: relativePath,
-            content: fs.readFileSync(fullPath, 'utf-8')
-          });
-        }
+app.get('/api/skills/:id/export', authenticate, requireAdmin, (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const skills = readJson(SKILLS_FILE, []);
+      const skill = skills.find(s => s.id === req.params.id);
+      if (!skill) {
+        res.status(404).json({ error: '技能不存在' });
+        return;
+      }
+      
+      const skillDir = getSkillDir(skill.id);
+      const zipPath = join(TEMP_DIR, `${skill.slug}-${skill.version}-${Date.now()}.zip`);
+      
+      // 创建 ZIP
+      const output = createWriteStream(zipPath);
+      const archive = archiver('zip', { zlib: { level: 9 } });
+      
+      output.on('close', () => {
+        res.download(zipPath, `${skill.slug}-${skill.version}.zip`, (err) => {
+          if (err) console.error('下载失败:', err);
+          // 清理临时 ZIP
+          if (existsSync(zipPath)) unlinkSync(zipPath);
+        });
       });
-    };
-    listFiles(skillDir);
-  }
-  
-  // 创建临时 JSON 文件
-  const tempJsonPath = join(TEMP_DIR, `${randomUUID()}-export.json`);
-  fs.writeFileSync(tempJsonPath, JSON.stringify(exportData, null, 2));
-  
-  // 创建 ZIP（包含 manifest.json 和所有文件）
-  const archiver = (await import('archiver')).default;
-  const archive = archiver('zip', { zlib: { level: 9 } });
-  const output = createWriteStream(zipPath);
-  
-  archive.pipe(output);
-  
-  // 添加 manifest
-  archive.append(JSON.stringify(exportData.manifest, null, 2), { name: 'manifest.json' });
-  
-  // 添加 skill.md
-  if (skill.content) {
-    archive.append(skill.content, { name: 'skill.md' });
-  }
-  
-  // 添加 README.md
-  if (skill.readme) {
-    archive.append(skill.readme, { name: 'README.md' });
-  }
-  
-  // 添加所有文件
-  exportData.files.forEach(file => {
-    archive.append(file.content, { name: `files/${file.path}` });
-  });
-  
-  await archive.finalize();
-  await new Promise(resolve => output.on('close', resolve));
-  
-  // 清理临时 JSON
-  fs.unlinkSync(tempJsonPath);
-  
-  // 发送 ZIP
-  res.download(zipPath, `${skill.slug}-${skill.version}.zip`, () => {
-    // 下载完成后删除临时 ZIP
-    if (existsSync(zipPath)) fs.unlinkSync(zipPath);
+      
+      archive.on('error', (err) => {
+        res.status(500).json({ error: err.message });
+      });
+      
+      archive.pipe(output);
+      
+      // 添加 manifest.json
+      const manifest = {
+        name: skill.name,
+        slug: skill.slug,
+        version: skill.version,
+        author: skill.author,
+        description: skill.description,
+        category: skill.category,
+        tags: skill.tags,
+        icon: skill.icon,
+        created_at: skill.created_at
+      };
+      archive.append(JSON.stringify(manifest, null, 2), { name: 'manifest.json' });
+      
+      // 添加 skill.md
+      if (skill.content) {
+        archive.append(skill.content, { name: 'skill.md' });
+      }
+      
+      // 添加 README.md
+      if (skill.readme) {
+        archive.append(skill.readme, { name: 'README.md' });
+      }
+      
+      // 添加所有文件
+      if (existsSync(skillDir)) {
+        archive.directory(skillDir, 'files');
+      }
+      
+      archive.finalize();
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 });
 
@@ -560,25 +534,15 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
     return res.status(400).json({ error: '请选择要导入的 ZIP 文件' });
   }
   
-  const fs = require('fs');
   const zipPath = req.file.path;
   const extractDir = join(TEMP_DIR, `import-${randomUUID()}`);
   
   try {
     // 解压 ZIP
     mkdirSync(extractDir, { recursive: true });
-    const { createGunzip } = await import('zlib');
-    const { entry } = await import('unzipper');
     
     await new Promise((resolve, reject) => {
-      createReadStream(zipPath)
-        .pipe(entry())
-        .on('finish', resolve)
-        .on('error', reject);
-    });
-    
-    // 使用 unzipper 解压
-    await new Promise((resolve, reject) => {
+      const fs = require('fs');
       fs.createReadStream(zipPath)
         .pipe(unzipper.Extract({ path: extractDir }))
         .on('close', resolve)
@@ -591,7 +555,7 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
       throw new Error('无效的技能包：缺少 manifest.json');
     }
     
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
     
     // 检查 slug 是否已存在
     const skills = readJson(SKILLS_FILE, []);
@@ -610,19 +574,20 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
     
     if (existsSync(filesDir)) {
       const copyRecursive = (src, dest) => {
-        fs.readdirSync(src).forEach(file => {
+        readdirSync(src).forEach(file => {
           const srcPath = join(src, file);
           const destPath = join(dest, file);
-          if (fs.statSync(srcPath).isDirectory()) {
+          const stat = statSync(srcPath);
+          if (stat.isDirectory()) {
             mkdirSync(destPath, { recursive: true });
             copyRecursive(srcPath, destPath);
           } else {
-            fs.copyFileSync(srcPath, destPath);
+            copyFileSync(srcPath, destPath);
             importedFiles.push({
               id: randomUUID(),
               name: file,
               path: file,
-              size: fs.statSync(destPath).size,
+              size: statSync(destPath).size,
               created_at: new Date().toISOString()
             });
           }
@@ -645,8 +610,8 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
       category: manifest.category || 'other',
       tags: manifest.tags || '',
       icon: manifest.icon || '📦',
-      content: existsSync(skillMdPath) ? fs.readFileSync(skillMdPath, 'utf-8') : '',
-      readme: existsSync(readmeMdPath) ? fs.readFileSync(readmeMdPath, 'utf-8') : '',
+      content: existsSync(skillMdPath) ? readFileSync(skillMdPath, 'utf-8') : '',
+      readme: existsSync(readmeMdPath) ? readFileSync(readmeMdPath, 'utf-8') : '',
       files: importedFiles,
       featured: 0,
       downloads: 0,
@@ -662,14 +627,14 @@ app.post('/api/skills/import', authenticate, requireAdmin, upload.single('file')
     
     // 清理临时文件
     deleteFolderRecursive(extractDir);
-    fs.unlinkSync(zipPath);
+    unlinkSync(zipPath);
     
     res.json({ success: true, skill: newSkill });
     
   } catch (error) {
     // 清理临时文件
     if (existsSync(extractDir)) deleteFolderRecursive(extractDir);
-    if (existsSync(zipPath)) fs.unlinkSync(zipPath);
+    if (existsSync(zipPath)) unlinkSync(zipPath);
     
     res.status(400).json({ error: error.message });
   }
