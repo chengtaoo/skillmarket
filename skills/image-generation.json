@@ -1,0 +1,16 @@
+{
+  "id": "image-generation",
+  "name": "AI图片生成",
+  "nameEn": "image-generation",
+  "version": "1.1.0",
+  "description": "基于Gemini模型的图片生成和编辑工具，支持文生图、图生文、智能修图等多种能力。",
+  "author": "系统内置",
+  "category": "AI能力",
+  "tags": ["图片生成", "AI", "Gemini"],
+  "installCount": 3562,
+  "rating": 4.9,
+  "updatedAt": "2026-05-01",
+  "files": {
+    "SKILL.md": "---\nname: image-generation\nversion: 1.1.0\ndescription: 基于Gemini模型的AI图片生成和编辑工具\nauthor: 内置\ntags: [图片生成, AI, Gemini]\n---\n\n# AI图片生成技能\n\n基于Gemini模型的强大图片生成和编辑能力。\n\n## 功能\n\n- 文本生成图片（文生图）\n- 图片内容分析（图生文）\n- 智能图片编辑\n- 图片风格转换\n\n## 使用方式\n\n```\n生成一张科技风格的封面图：未来城市夜景\n```\n\n## 参数\n\n- model: 使用的模型（默认gemini-pro-vision）\n- size: 图片尺寸\n- style: 风格选项\n"
+  }
+}

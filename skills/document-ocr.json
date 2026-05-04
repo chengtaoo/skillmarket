@@ -1,0 +1,16 @@
+{
+  "id": "document-ocr",
+  "name": "文档OCR识别",
+  "nameEn": "document-ocr",
+  "version": "1.0.0",
+  "description": "文档和图片OCR识别工具，支持PDF、Word、图片中的文字提取。",
+  "author": "系统内置",
+  "category": "文档处理",
+  "tags": ["OCR", "文字识别", "文档处理"],
+  "installCount": 1834,
+  "rating": 4.4,
+  "updatedAt": "2026-04-20",
+  "files": {
+    "SKILL.md": "---\nname: document-ocr\nversion: 1.0.0\ndescription: 文档OCR识别工具，支持多种格式文字提取\nauthor: 内置\ntags: [OCR, 文字识别, 文档处理]\n---\n\n# 文档OCR识别\n\n高效准确的文档文字识别工具。\n\n## 支持格式\n\n- PDF 文档\n- Word 文档 (.docx)\n- 图片 (JPG, PNG, BMP)\n- 扫描件\n- 截图\n\n## 功能\n\n- 批量处理\n- 表格识别\n- 公式识别\n- 多语言支持\n- 保留原始格式\n\n## 使用方式\n\n```\n识别这张图片中的文字\n提取PDF文档中的表格数据\n```\n"
+  }
+}

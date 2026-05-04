@@ -1,0 +1,17 @@
+{
+  "id": "weather-query",
+  "name": "天气查询",
+  "nameEn": "weather-query",
+  "version": "1.0.0",
+  "description": "基于高德地图的天气查询工具，支持城市天气、空气质量、生活指数等多维度天气信息。",
+  "author": "系统内置",
+  "category": "工具类",
+  "tags": ["天气", "工具", "高德地图"],
+  "installCount": 2847,
+  "rating": 4.8,
+  "updatedAt": "2026-04-15",
+  "files": {
+    "SKILL.md": "---\nname: weather-query\nversion: 1.0.0\ndescription: 基于高德地图API的天气查询工具，支持实时天气、空气质量和生活指数\nauthor: 内置\ntags: [天气, 工具, 高德地图]\n---\n\n# 天气查询技能\n\n基于高德地图API的天气查询工具，为AI助手提供天气信息查询能力。\n\n## 功能\n\n- 实时天气查询（温度、湿度、风力等）\n- 空气质量指数（AQI、PM2.5等）\n- 生活指数（穿衣、紫外线、运动等）\n- 支持全国所有城市\n\n## 使用方式\n\n```\n查询北京今天的天气\n```\n\n## 配置\n\n需要设置高德地图API密钥（AMAP_KEY）\n",
+    "script.js": "// 天气查询核心逻辑\nclass WeatherQuery {\n  async query(city) {\n    const res = await fetch(`https://restapi.amap.com/v3/weather/weatherInfo?city=${city}&key=${this.key}`);\n    return res.json();\n  }\n}\nmodule.exports = WeatherQuery;"
+  }
+}

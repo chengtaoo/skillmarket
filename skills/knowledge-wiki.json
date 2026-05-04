@@ -1,0 +1,16 @@
+{
+  "id": "knowledge-wiki",
+  "name": "知识库管理",
+  "nameEn": "knowledge-wiki",
+  "version": "1.1.0",
+  "description": "个人知识库管理工具，支持文档整理、知识点抽取、检索和分享。",
+  "author": "系统内置",
+  "category": "知识管理",
+  "tags": ["知识库", "文档", "整理"],
+  "installCount": 2156,
+  "rating": 4.7,
+  "updatedAt": "2026-04-25",
+  "files": {
+    "SKILL.md": "---\nname: knowledge-wiki\nversion: 1.1.0\ndescription: 个人知识库管理，支持文档整理和知识点抽取\nauthor: 内置\ntags: [知识库, 文档, 整理]\n---\n\n# 知识库管理\n\n个人知识库管理工具，整理、沉淀、检索一体化。\n\n## 功能\n\n- 多格式文档上传（PDF、DOCX、TXT、CSV）\n- AI 智能抽取关键知识点\n- 知识图谱构建\n- 语义检索\n- 导出为 CSV 或 Dify 格式\n\n## 使用方式\n\n```\n上传文档到知识库\n查询相关知识点\n```\n\n## 数据来源\n\n- 个人文档\n- 网络文章\n- 读书笔记\n- 项目文档\n"
+  }
+}

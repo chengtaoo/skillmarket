@@ -1,0 +1,16 @@
+{
+  "id": "pptx-generator",
+  "name": "PPT演示文稿生成",
+  "nameEn": "pptx-generator",
+  "version": "1.0.0",
+  "description": "基于PptxGenJS的演示文稿生成工具，支持自定义模板、图表、动画。",
+  "author": "系统内置",
+  "category": "办公效率",
+  "tags": ["PPT", "演示文稿", "自动化"],
+  "installCount": 1654,
+  "rating": 4.6,
+  "updatedAt": "2026-04-18",
+  "files": {
+    "SKILL.md": "---\nname: pptx-generator\nversion: 1.0.0\ndescription: PPT演示文稿生成工具，支持多种模板和图表\nauthor: 内置\ntags: [PPT, 演示文稿, 自动化]\n---\n\n# PPT演示文稿生成\n\n基于 PptxGenJS 的专业演示文稿生成。\n\n## 功能\n\n- 多种预设模板\n- 图表生成（柱状图、饼图、折线图）\n- 动画效果\n- 母版设计\n- 批量生成\n\n## 模板风格\n\n- 科技风\n- 商务风\n- 简约风\n- 渐变风格\n\n## 使用方式\n\n```\n生成一个关于Q1业绩的PPT\n创建一个科技风格的发布会演示\n```\n"
+  }
+}

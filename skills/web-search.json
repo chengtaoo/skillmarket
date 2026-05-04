@@ -1,0 +1,16 @@
+{
+  "id": "web-search",
+  "name": "网络搜索聚合",
+  "nameEn": "web-search",
+  "version": "1.2.0",
+  "description": "多引擎网络搜索集成，支持7个中文引擎和9个国际引擎，支持时间筛选、站点搜索等高级功能。",
+  "author": "系统内置",
+  "category": "工具类",
+  "tags": ["搜索", "网络", "聚合"],
+  "installCount": 4521,
+  "rating": 4.9,
+  "updatedAt": "2026-05-03",
+  "files": {
+    "SKILL.md": "---\nname: web-search\nversion: 1.2.0\ndescription: 多引擎网络搜索集成，支持16个搜索引擎\nauthor: 内置\ntags: [搜索, 网络, 聚合]\n---\n\n# 网络搜索聚合\n\nMulti search engine integration with 16 engines.\n\n## 支持引擎\n\n### 中文引擎（7个）\n- 百度\n- 搜狗\n- 360\n- 神马\n- 必应中文\n- 头条搜索\n- 微信搜索\n\n### 国际引擎（9个）\n- Google\n- Bing\n- DuckDuckGo\n- Yahoo\n- Ask\n- AOL\n- WolframAlpha\n- GitHub\n- Wikipedia\n\n## 功能\n\n- 高级搜索运算符\n- 时间范围筛选\n- 站点搜索 (site:)\n- 隐私搜索引擎支持\n- WolframAlpha 数学计算\n\n## 使用方式\n\n```\n搜索最近一周关于AI大模型的新闻\n搜索 site:github.com openclaw\n```\n"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "enterprise-search",
+  "name": "企业工商信息查询",
+  "nameEn": "enterprise-search",
+  "version": "1.0.0",
+  "description": "支持查询企业基本信息、工商信息、投资信息、资质证书、股权信息等企业级数据。",
+  "author": "系统内置",
+  "category": "数据查询",
+  "tags": ["企业", "工商", "数据查询"],
+  "installCount": 1923,
+  "rating": 4.6,
+  "updatedAt": "2026-04-10",
+  "files": {
+    "SKILL.md": "---\nname: enterprise-search\nversion: 1.0.0\ndescription: 企业工商信息查询工具，支持多维度企业数据查询\nauthor: 内置\ntags: [企业, 工商, 数据查询]\n---\n\n# 企业工商信息查询\n\n支持查询企业的全面工商信息。\n\n## 功能\n\n- 企业基本信息查询\n- 工商信息查询\n- 投资信息查询\n- 资质证书查询\n- 股权信息查询\n\n## 使用方式\n\n```\n查询腾讯公司的工商信息\n```\n"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "video-analyzer",
+  "name": "视频内容分析",
+  "nameEn": "video-analyzer",
+  "version": "1.0.0",
+  "description": "使用阿里云Qwen VL模型对视频进行智能分析，提取关键帧和内容理解。",
+  "author": "系统内置",
+  "category": "AI能力",
+  "tags": ["视频分析", "AI", "Qwen"],
+  "installCount": 1287,
+  "rating": 4.8,
+  "updatedAt": "2026-05-01",
+  "files": {
+    "SKILL.md": "---\nname: video-analyzer\nversion: 1.0.0\ndescription: 使用Qwen VL模型进行视频内容分析\nauthor: 内置\ntags: [视频分析, AI, Qwen]\n---\n\n# 视频内容分析\n\n基于阿里云 Qwen VL 多模态模型的智能视频分析。\n\n## 功能\n\n- 视频关键帧提取\n- 内容理解与摘要\n- 物体识别与跟踪\n- 场景检测\n- 语音转文字\n\n## 使用方式\n\n```\n分析这个视频的主要内容\n提取视频中的关键信息\n```\n\n## 技术规格\n\n- 模型：Qwen VL Plus\n- 支持格式：MP4, AVI, MOV\n- 最大时长：30分钟\n"
+  }
+}
