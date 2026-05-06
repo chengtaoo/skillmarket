@@ -3,22 +3,18 @@
  * 支持文件上传、ZIP导入导出、文件系统存储
  */
 
+import 'dotenv/config';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
-import { createWriteStream, readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, copyFileSync, statSync, readdir, rmdirSync, createReadStream } from 'fs';
+import { createWriteStream, readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, copyFileSync, statSync, createReadStream, rmSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
-import { createGzip } from 'zlib';
-import { pipeline } from 'stream/promises';
-import { promisify } from 'util';
 import archiver from 'archiver';
 import unzipper from 'unzipper';
-
-const pipe = promisify(pipeline);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -143,20 +139,15 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// 前端静态资源（含离线打包的 Font Awesome 等），需在 SPA 兜底之前注册
+app.use(express.static(join(__dirname, 'public')));
+
 // ============ 工具函数 ============
 
-// 递归删除目录
+// 递归删除目录（ESM 环境避免使用 require）
 function deleteFolderRecursive(dirPath) {
   if (existsSync(dirPath)) {
-    readdirSync(dirPath).forEach(file => {
-      const curPath = join(dirPath, file);
-      if (statSync(curPath).isDirectory()) {
-        deleteFolderRecursive(curPath);
-      } else {
-        unlinkSync(curPath);
-      }
-    });
-    rmdirSync(dirPath);
+    rmSync(dirPath, { recursive: true, force: true });
   }
 }
 
@@ -677,8 +668,6 @@ app.get('/api/skills/:id/export', authenticate, requireAdmin, (req, res) => {
   });
 });
 
-// 导入 ZIP 包
-
 // ============ 技能 CRUD ============
 
 app.post('/api/skills', authenticate, requireAdmin, (req, res) => {
@@ -920,9 +909,10 @@ app.get('/index.html', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(join(STATIC_DIR, 'index.html'));
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: '接口不存在' });
   }
+  res.sendFile(join(STATIC_DIR, 'index.html'));
 });
 
 app.listen(PORT, () => {

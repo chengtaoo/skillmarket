@@ -14,8 +14,8 @@ services:
       - JWT_SECRET=your-super-secret-key-change-in-production
       - PORT=3000
     volumes:
+      # 持久化技能与用户数据；首次部署前可在项目根目录创建空目录 data/
       - ./data:/app/server/data
-      - ./logs:/app/logs
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
       interval: 30s

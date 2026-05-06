@@ -1,0 +1,13 @@
+# Docker Compose 宿主机数据目录（挂载到 server/data，不必入库）
+/data/
+
+# 依赖（部署时在 server 目录 npm ci / npm install）
+server/node_modules/
+
+# 本地环境与密钥
+.env
+server/.env
+
+# 运行时上传与临时文件（如需保留数据请勿忽略 server/data）
+server/uploads/
+server/temp/
