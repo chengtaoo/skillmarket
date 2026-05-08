@@ -91,13 +91,42 @@ docker run -d -p 3000:3000 \
   skillmarket
 ```
 
-或使用 Compose：
+或使用 Compose（**本地从 Dockerfile 构建**）：
 
 ```bash
 docker compose up -d
 ```
 
-数据目录：默认将宿主机的 `./data` 挂载到容器内 `/app/server/data`，用于持久化 `users.json`、`skills.json` 等。首次使用可在项目根目录创建空目录 `data/`。
+### 使用 CI 构建的远程镜像（推荐配合私有仓库）
+
+若你已通过 GitHub Actions 等将镜像推送到 Docker Registry，可使用 **`docker-compose.registry.yml`**，无需在目标机器上执行 `docker build`。
+
+1. 在仓库根目录创建 `.env`（勿提交到 Git，可加入 `.gitignore`）：
+
+```bash
+SKILLMARKET_IMAGE=你的仓库域名/命名空间/skillmarket:标签
+JWT_SECRET=请改为足够长的随机字符串
+# 可选：映射到宿主机的端口，默认 3000
+# SKILLMARKET_PORT=8080
+```
+
+2. 准备数据目录并启动：
+
+```bash
+mkdir -p data
+docker compose -f docker-compose.registry.yml up -d
+```
+
+3. 更新镜像版本：
+
+```bash
+docker compose -f docker-compose.registry.yml pull
+docker compose -f docker-compose.registry.yml up -d
+```
+
+私有仓库需先执行：`docker login <仓库域名>`。
+
+数据目录：与上文相同，将宿主机的 **`./data`** 挂载到容器内 **`/app/server/data`**，用于持久化 `users.json`、`skills.json` 等。首次使用可在项目根目录创建空目录 `data/`。
 
 ## 项目结构
 
@@ -105,7 +134,8 @@ docker compose up -d
 skillmarket/
 ├── index.html                 # 前端单页（由 Express 从仓库根目录提供）
 ├── skills/                    # 示例/参考技能 JSON（非运行时唯一数据源）
-├── docker-compose.yml
+├── docker-compose.yml           # 本地 build + 运行
+├── docker-compose.registry.yml  # 仅拉取远程镜像运行（CI 推送场景）
 ├── Dockerfile
 ├── README.md
 └── server/

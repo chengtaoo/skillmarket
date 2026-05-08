@@ -1,0 +1,30 @@
+# 从镜像仓库拉取 CI 构建的镜像并启动（非本地 build）
+#
+# 1. 在本文件同目录创建 .env（可选）或导出环境变量：
+#    SKILLMARKET_IMAGE=你的仓库/skillmarket:标签
+#    JWT_SECRET=足够长的随机串
+# 2. 首次部署前创建数据目录：mkdir -p data
+# 3. 启动：
+#    docker compose -f docker-compose.registry.yml up -d
+#
+# 若镜像仓库需登录：docker login <仓库域名>
+
+services:
+  skillmarket:
+    image: ${SKILLMARKET_IMAGE:-your-registry/skillmarket:latest}
+    container_name: skillmarket
+    restart: unless-stopped
+    ports:
+      - "${SKILLMARKET_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-secret}
+    volumes:
+      - ./data:/app/server/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
